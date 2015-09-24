@@ -40,7 +40,7 @@ gameState gameState::createGame(string fileName){
 
 	int width, height;
 
-	fin >> width >> heightystem("PAUSE");
+	
 	// Parse width and height
 
 	// Check that grid is larger than 1x1
