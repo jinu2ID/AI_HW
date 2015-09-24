@@ -10,6 +10,7 @@ gameState class for Sliding Brick Puzzle
 #include "gameState.h"
 #include <cstdlib>
 #include <vector>
+#include <stringstream>
 
 using namespace std;
 
