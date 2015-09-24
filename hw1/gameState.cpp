@@ -29,7 +29,6 @@ gameState gameState::createGame(string fileName){
 	
 	// Open file
 
-	vector<int> values;
 	ifstream fin;
 	fin.open(fileName.c_str());
 
@@ -38,10 +37,29 @@ gameState gameState::createGame(string fileName){
 		exit (EXIT_FAILURE);
 	}
 
-	int width, height;
-
 	
-	// Parse width and height
+	// Parse values from csv
+	
+	string line;
+	vector<int> values;
+	string value;
+
+	getline(fin, line);
+	stringstream lineStream(line);
+
+	iwhile(getline(lineStream, value, ','))
+	{
+		int int_value = stoi(value, 10);
+		values.push_back(int_value);
+	}
+
+	int i;
+
+	for(i = 0; i < values.size(); i++){
+		cout >> values[i];
+	}
+
+
 
 	// Check that grid is larger than 1x1
 
