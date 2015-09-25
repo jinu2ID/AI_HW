@@ -18,13 +18,8 @@ class gameState {
 
 public:
 	//Constructors
-	gameState(const int width, const int height);
+	gameState(vector< vector<int> > _matrix);
 
-	//Create gameState from file
-//	gameState createGame(string fileName);
-
-	// Mutators
-	void addRow(vector<int> row);
 
 private:
 	vector<vector<int> > board;         // 2D vector to hold game state
