@@ -10,7 +10,7 @@ gameState class for Sliding Brick Puzzle
 #include "gameState.h"
 #include <cstdlib>
 #include <vector>
-#include <stringstream>
+#include <string>
 
 using namespace std;
 
@@ -48,16 +48,16 @@ gameState gameState::createGame(string fileName){
 	getline(fin, line);
 	stringstream lineStream(line);
 
-	iwhile(getline(lineStream, value, ','))
+	while(getline(lineStream, value, ','))
 	{
-		int int_value = stoi(value, 10);
+		int int_value = stoi(value);
 		values.push_back(int_value);
 	}
 
 	int i;
 
 	for(i = 0; i < values.size(); i++){
-		cout >> values[i];
+		cout << values[i];
 	}
 
 
