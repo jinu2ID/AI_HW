@@ -11,6 +11,9 @@ gameState class for Sliding Brick Puzzle
 #include <cstdlib>
 #include <vector>
 #include <string>
+#include <cstring>
+#include <stdlib.h>
+#include <sstream>
 
 using namespace std;
 
@@ -26,7 +29,7 @@ gameState::gameState(int width, int height){
 		board[i].resize(width);
 }
 
-gameState gameState::createGame(string fileName){
+/*gameState gameState::createGame(string fileName){
 	
 	// Open file
 
@@ -39,18 +42,26 @@ gameState gameState::createGame(string fileName){
 	}
 
 	
-	// Parse values from csv
+	 Parse values from csv
+	 This was tricky as I couldn't use atoi(no error handling).
+	 I had to convert the number string to a char *. Then pass
+	 it to strtol and convert it to an int. Seems like some C++
+	 voodoo.
 	
+
 	string line;
 	vector<int> values;
 	string value;
+	char *endptr;
 
 	getline(fin, line);
 	stringstream lineStream(line);
 
 	while(getline(lineStream, value, ','))
 	{
-		int int_value = stoi(value);
+		char* convert = new char[value.length() + 1];
+		strcpy(convert, value.c_str());
+		long int_value = strtol(convert, &endptr, 10);
 		values.push_back(int_value);
 	}
 
@@ -73,8 +84,10 @@ gameState gameState::createGame(string fileName){
 	// add row vector to board
 
 	// return gameState object
+	gameState game1(2, 2);
+	return game1;
 
-}
+}*/
 
 // gameState Mutators
 

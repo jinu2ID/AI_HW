@@ -21,7 +21,7 @@ public:
 	gameState(const int width, const int height);
 
 	//Create gameState from file
-	gameState createGame(string fileName);
+//	gameState createGame(string fileName);
 
 	// Mutators
 	void addRow(vector<int> row);
