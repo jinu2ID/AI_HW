@@ -47,8 +47,10 @@ int main(int argc, char *argv[]) {
 	myGame.printState();
 
 	// Test puzzle solved fucntion
-	bool solved = myGame.checkSolved();
-	cout << solved << endl;
+	if (myGame.checkSolved())
+		cout << "Solved!" << endl;
+	else
+		cout << "Not solved!" << endl;
 
 }
 
