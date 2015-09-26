@@ -19,9 +19,18 @@ class gameState {
 public:
 	//Constructors
 	gameState(vector< vector<int> > _matrix);
+	gameState(const gameState& obj);           //Copy constructor
+	
+	//Inspectors
+	void printState();
+	bool checkSolved();
 
+	//Mutators
+	void changeValue(int row, int column, int newValue);
 
 private:
+	int width;
+	int height;
 	vector<vector<int> > board;         // 2D vector to hold game state
 
 };

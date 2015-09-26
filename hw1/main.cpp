@@ -16,20 +16,39 @@ using namespace std;
 //FUNCTION PROTOTYPES
 vector< vector<int> > getValues(string fileName);
 
-main() {
+int main(int argc, char *argv[]) {
 
-vector< vector<int> > startState = getValues("SBP-level0.txt");
+	// Test creating gameState from file
+	// Get file name
+	string file;
 
-int i, j;
-
-for(i = 0; i < startState.size(); i++){
-
-	for(j = 0; j < startState[i].size(); j++){
-		cout << startState[i][j] ;
-	
+	if(argc < 2 ){
+		while(file.empty()){
+			cout << "Enter a filename" << endl;
+			cin >> file;
+		}
+	} else {
+		file = argv[1];
 	}
-	cout << endl;
-}
+
+	vector< vector<int> > startState = getValues(file);
+
+	gameState myGame(startState);
+
+	// Test print function
+	myGame.printState();
+
+	// Test copy function
+	gameState yourGame(myGame);
+
+	yourGame.changeValue(0,0,100);
+
+	yourGame.printState();
+	myGame.printState();
+
+	// Test puzzle solved fucntion
+	bool solved = myGame.checkSolved();
+	cout << solved << endl;
 
 }
 
@@ -53,23 +72,18 @@ vector< vector<int> > getValues(string fileName){
 		  // First two values are width and height
         string line;       
         getline(fin, line);
-
+			
 		  // Check that strlen is 4
 		  if(line.length() != 4){
 			  cout << "Incorrect format for height and width" << endl;
 			  exit (EXIT_FAILURE);
 		  }
 
-		  // Convert width and height to int
-		  char number = line[0];
+		  // Convert height to int
+		  char number = line[2];
 		  char* convert = new char[2];
 		  strcpy(convert, &number);
 		  char *endptr;
-		  
-		  int width = (int)strtol(convert, &endptr, 10);
-		  
-		  number = line[2];
-		  strcpy(convert, &number);
 		  
 		  int height = (int)strtol(convert, &endptr, 10);
 
