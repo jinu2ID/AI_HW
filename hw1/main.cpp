@@ -55,6 +55,18 @@ int main(int argc, char *argv[]) {
 	else
 		cout << "Not solved!" << endl;
 
+	// Test showing piece's moves
+	vector<Move> moves = myGame.getMoves(8);
+
+	if (moves.size() == 0)
+		cout << "No moves" << endl;
+	else {
+		int i;
+		for (i = 0; i < moves.size(); i++){
+			moves[i].printMove();
+		}
+	}
+
 }
 
 

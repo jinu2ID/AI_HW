@@ -93,19 +93,26 @@ vector<Move> GameState::getMoves(int piece){
 			if (board[i][j] == piece){  // Find piece
 				// If the piece above, below, left, or right of our piece is not 0
 				// or the same then that direction is completely blocked
-				if ((board[i-1][j] != 0) or (board[i-1][j] != piece))
+				if ((board[i-1][j] != 0) and (board[i-1][j] != piece)){
 					up = false;
-				if ((board[i+1][j] != 0) or (board[i+1][j] != piece))
+				}
+				if ((board[i+1][j] != 0) and (board[i+1][j] != piece)){
 					down = false;
-				if ((board[i][j-1] != 0) or (board[i][j-1] != piece))
+				}
+				if ((board[i][j-1] != 0) and (board[i][j-1] != piece)){
 					left = false;
-				if ((board[i][j+1] != 0) or (board[i][j+1] != piece))
+				}
+				if ((board[i][j+1] != 0) and (board[i][j+1] != piece)){
 					right = false;
+				}
 			}
-			// Stop searching if all sides are blocked
+			// Stop searching if all sides are blocked; check after each cell
 			if ((!up) and (!down) and (!left) and (!right))
 				break;
 		}
+		// Stop searching if all sides are blocked; check after each row
+		if ((!up) and (!down) and (!left) and (!right))
+			break;
 	} // End of search loop
 	
 	// Add open directions to moves vector
