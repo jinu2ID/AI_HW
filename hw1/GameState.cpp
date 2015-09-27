@@ -62,6 +62,7 @@ bool GameState::checkSolved(){
 	return true;
 }
 
+// Returns possible moves for a piece
 vector<Move> GameState::getMoves(int piece){
 	
 	// Directions and vector to return possible moves
@@ -129,7 +130,27 @@ vector<Move> GameState::getMoves(int piece){
 
 }
 
+// Returns all possible moves for all pieces in a game state
+vector <vector<Move> > GameState::getAllMoves(){
+	
+	vector <vector<Move> > allMoves;
+	// Iterate through every piece on the board
+	int i,j;
 
+	for (i = 0; i < height; i++){
+		for (j = 0; j < width; j++){
+			// Get the piece's moveas
+			int x = board[i][j];
+			vector<Move> moves = this->getMoves(x);
+			// If the piece has moves add it to our collection of all moves
+			if(moves.size() != 0)
+				allMoves.push_back(moves);
+		}
+	}
+
+	return allMoves;
+
+}
 //Mutators
 void GameState::changeValue(int row, int column, int newValue){
 	board[row][column] = newValue;

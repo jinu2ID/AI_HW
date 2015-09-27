@@ -26,6 +26,7 @@ public:
 	void printState();
 	bool checkSolved();
 	vector<Move> getMoves(int piece);
+	vector <vector<Move> > getAllMoves();
 
 	//Mutators
 	void changeValue(int row, int column, int newValue);
