@@ -1,14 +1,16 @@
 /*
 Author: Jinu Jacob
 Created: 9/23/15
-Main program to test gameState class
+Main program to test GameState class
 */
 
 #include <fstream>
 #include <stdio.h>
 #include <iostream>
-#include "gameState.h"
-#include "gameState.cpp"
+#include "GameState.h"
+#include "GameState.cpp"
+#include "Move.h"
+#include "Move.cpp"
 #include <string>
 
 using namespace std;
@@ -16,9 +18,10 @@ using namespace std;
 //FUNCTION PROTOTYPES
 vector< vector<int> > getValues(string fileName);
 
+
 int main(int argc, char *argv[]) {
 
-	// Test creating gameState from file
+	// Test creating GameState from file
 	// Get file name
 	string file;
 
@@ -33,13 +36,13 @@ int main(int argc, char *argv[]) {
 
 	vector< vector<int> > startState = getValues(file);
 
-	gameState myGame(startState);
+	GameState myGame(startState);
 
 	// Test print function
 	myGame.printState();
 
 	// Test copy function
-	gameState yourGame(myGame);
+	GameState yourGame(myGame);
 
 	yourGame.changeValue(0,0,100);
 

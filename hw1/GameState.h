@@ -10,20 +10,22 @@ game state class for Sliding Brick Puzzle
 #include <fstream>
 #include <vector>
 #include <string>
+#include "Move.h"
 
 using namespace std;
 
-class gameState {
+class GameState {
 
 
 public:
 	//Constructors
-	gameState(vector< vector<int> > _matrix);
-	gameState(const gameState& obj);           //Copy constructor
+	GameState(vector< vector<int> > _matrix);
+	GameState(const GameState& obj);           //Copy constructor
 	
 	//Inspectors
 	void printState();
 	bool checkSolved();
+	vector<Move> getMoves(int piece);
 
 	//Mutators
 	void changeValue(int row, int column, int newValue);
