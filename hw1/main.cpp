@@ -108,6 +108,12 @@ int main(int argc, char *argv[]) {
 	Move newerMove(3, 'r');
 	GameState cloneState = myGame.applyMoveCloning(newerMove);
 	cloneState.printState();
+	cout << endl;
+
+	// Test compareState function
+	cout << "Compare States function test" << endl;
+	bool same = myGame.compareState(cloneState);
+	cout << same << endl;
 
 }
 

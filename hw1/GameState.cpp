@@ -165,6 +165,26 @@ vector <vector<Move> > GameState::getAllMoves(){
 
 }
 
+bool GameState::compareState(GameState otherState){
+
+	int i,j;
+	
+	// First check that they are the same size
+	if ((height != otherState.height) or (width != otherState.width))
+	  return false;	
+
+	// Iterate through each position and compare
+	for (i = 0; i < height; i++){
+		for (j = 0; j < width; j++){
+			if (board[i][j] != otherState.board[i][j])
+				return false;
+		}
+	}
+	// All positions are same; return true
+	return true;
+
+}
+
 
 //Mutators
 void GameState::changeValue(int row, int column, int newValue){

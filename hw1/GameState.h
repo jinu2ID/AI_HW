@@ -27,6 +27,7 @@ public:
 	bool checkSolved();
 	vector<Move> getMoves(int piece);
 	vector <vector<Move> > getAllMoves();
+	bool compareState(GameState otherState);
 
 	//Mutators
 	void changeValue(int row, int column, int newValue);
