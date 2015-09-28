@@ -164,30 +164,152 @@ vector <vector<Move> > GameState::getAllMoves(){
 	return allMoves;
 
 }
+
+
 //Mutators
 void GameState::changeValue(int row, int column, int newValue){
 	board[row][column] = newValue;
 }
 
+
 void GameState::applyMove(Move move){
 	
 	int piece = move.getPiece();
 	char direction = move.getDirection();
-	int destination;
+	vector <vector<int> > destinations; // This vector will store positions
+	// our piece is moving to (only for right and down)
+	vector <vector<int> > toZeroes; // This vector will store positions that
+	// need to be changed to 0
 
-	switch (direction) {
-		case 'u':
-			destination = 
+	// If the piece is moving up
+	if (direction == 'u'){
+		int i,j;
+		// Find the piece on the board
+		for (i = 0; i < height; i++){
+			for (j = 0; j < width; j++){
+				if (board[i][j] == piece){
+					board[i-1][j] = piece;
+					// If the position below piece is not the same,
+				   //	then that piece needs to be changed to zero
+					if (board[i+1][j] != piece){
+						vector<int> curPosition; // Temp storage for position
+						curPosition.push_back(i);
+						curPosition.push_back(j);
+						toZeroes.push_back(curPosition);
+					}
+
+				}
+			}
+		}
+		// Change old positions to zero
+		int k;
+		for (k = 0; k < toZeroes.size(); k++){
+			board[toZeroes[k][0]][toZeroes[k][1]] = 0; // This is same as
+			//board[x][y] = 0  where x and y are the row and column of the
+		   //	postition we stored earlier
+		}
+	}
+	// If the piece is moving down
+	// This is a special case. We can only update the positions at the end
+	// when we are done checking otherwise we will run into an infinite loop
+  	else if (direction == 'd'){
+		int i,j;
+		// Find the piece on the board
+		cout << "Here1" << endl;
+		for (i = 0; i < height; i++){
+			for (j = 0; j < width; j++){
+				if (board[i][j] == piece){
+					vector <int> newPosition;
+					newPosition.push_back(i+1);
+					newPosition.push_back(j);
+					destinations.push_back(newPosition);
+					// If the position above piece is not the same,
+				   //	then that piece needs to be changed to zero
+					if (board[i-1][j] != piece){
+						vector<int> curPosition; // Temp storage for position
+						curPosition.push_back(i);
+						curPosition.push_back(j);
+						toZeroes.push_back(curPosition);
+					}
+				}
+			}
+		}
+		// Move piece to new position
+		int m;
+		for (m = 0; m < destinations.size(); m++){
+			board[destinations[m][0]][destinations[m][1]] = piece; // We stored
+			// the positions as <x,y> vectors with the destinations vector.
+		}
+		// Change old positions to zero
+		int k;
+		for (k = 0; k < toZeroes.size(); k++){
+			board[toZeroes[k][0]][toZeroes[k][1]] = 0;
+		}
+	}
+	// If the piece is moving left
+  	else if (direction == 'l'){
+		int i,j;
+		// Find the piece on the board
+		for (i = 0; i < height; i++){
+			for (j = 0; j < width; j++){
+				if (board[i][j] == piece){
+					board[i][j-1] = piece;
+					// If the position right of  piece is not the same,
+				   //	then that piece needs to be changed to zero
+					if (board[i][j+1] != piece){
+						vector<int> curPosition; // Temp storage for position
+						curPosition.push_back(i);
+						curPosition.push_back(j);
+						toZeroes.push_back(curPosition);
+					}
+				}
+			}
+		}
+		// Change old positions to zero
+		int k;
+		for (k = 0; k < toZeroes.size(); k++){
+			board[toZeroes[k][0]][toZeroes[k][1]] = 0;
+		}
+	}
+	// If the piece is moving right. This is a special case similar to down
+  	else if (direction == 'r'){
+		int i,j;
+		// Find the piece on the board
+		for (i = 0; i < height; i++){
+			for (j = 0; j < width; j++){
+				if (board[i][j] == piece){
+					vector<int> newPosition;
+					newPosition.push_back(i);
+					newPosition.push_back(j+1);
+					destinations.push_back(newPosition);
+					// If the position left of piece is not the same,
+				   //	then that piece needs to be changed to zero
+					if (board[i][j-1] != piece){
+						vector<int> curPosition; // Temp storage for position
+						curPosition.push_back(i);
+						curPosition.push_back(j);
+						toZeroes.push_back(curPosition);
+					}
+				}
+			}
+		}
+		// Move piece to new position
+		int m;
+		for (m = 0; m < destinations.size(); m++){
+			board[destinations[m][0]][destinations[m][1]] = piece;
+		}
+		// Change old positions to zero
+		int k;
+		for (k = 0; k < toZeroes.size(); k++){
+			board[toZeroes[k][0]][toZeroes[k][1]] = 0;
+		}
+	}
+}
+
+GameState GameState::applyMoveCloning(Move move){
 	
-
-
-
-
-
-	}	
-
-	
-
-
-
+	vector<vector<int> > cloneVector = board;
+	GameState cloneState(cloneVector);
+	cloneState.applyMove(move);
+	return cloneState;
 }

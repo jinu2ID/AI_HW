@@ -31,6 +31,7 @@ public:
 	//Mutators
 	void changeValue(int row, int column, int newValue);
 	void applyMove(Move move);
+	GameState applyMoveCloning(Move move);
 
 private:
 	int width;

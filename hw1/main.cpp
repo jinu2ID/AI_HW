@@ -64,8 +64,11 @@ int main(int argc, char *argv[]) {
 	cout << endl;
 
 	// Test showing piece's moves
-	cout << "Get Piece's Moves Function Test" << endl;
-	vector<Move> moves = myGame.getMoves(8);
+	cout << "Get Piece's Moves Function Test" << endl << "Enter piece" <<
+		endl;
+	int piece;
+	cin >> piece;
+	vector<Move> moves = myGame.getMoves(piece);
 
 	if (moves.size() == 0)
 		cout << "No moves" << endl;
@@ -78,7 +81,7 @@ int main(int argc, char *argv[]) {
 	cout << endl;
 
 	// Test get all moves
-	cout << "Get All Moves for State Function" << endl;
+	cout << "Get All Moves for State Function Test" << endl;
 	vector <vector<Move> > allMoves = myGame.getAllMoves();
 	int i, j;
 	for (i = 0; i < allMoves.size(); i++){
@@ -88,6 +91,23 @@ int main(int argc, char *argv[]) {
 		}
 	}
 	cout << endl;
+
+	// Test applyMove function
+	cout << "Apply Move Function Test" << endl << "Enter piece" << endl;
+	cin >> piece;
+	cout << "Enter direction: u d l r" << endl;
+	char dir;
+	cin >> dir;
+	Move newMove(piece, dir);
+	myGame.applyMove(newMove);
+	myGame.printState();
+	cout << endl;
+
+	// Test applyMoveCloning function
+	cout << "Apply Move Cloning Test" << endl;
+	Move newerMove(3, 'r');
+	GameState cloneState = myGame.applyMoveCloning(newerMove);
+	cloneState.printState();
 
 }
 
