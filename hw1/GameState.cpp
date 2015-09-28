@@ -84,14 +84,23 @@ vector<Move> GameState::getMoves(int piece){
 	bool down = true;
 	bool left = true;
 	bool right = true;
+	bool pieceFound = false;
 
 
 	// Check if any positions above, below, left, or right of piece are blocked
 	int i,j;
 	for (i = 0; i < height; i++){
+		// Stop searching if all sides are blocked; check after each row
+		if ((!up) and (!down) and (!left) and (!right))
+			break;
+	
 		for (j = 0; j < width; j++){
-		
+	 		// Stop searching if all sides are blocked; check after each cell
+			if ((!up) and (!down) and (!left) and (!right))
+				break;
+
 			if (board[i][j] == piece){  // Find piece
+				pieceFound = true;
 				// If the piece above, below, left, or right of our piece is not 0
 				// or the same then that direction is completely blocked
 				if ((board[i-1][j] != 0) and (board[i-1][j] != piece)){
@@ -107,15 +116,19 @@ vector<Move> GameState::getMoves(int piece){
 					right = false;
 				}
 			}
-			// Stop searching if all sides are blocked; check after each cell
-			if ((!up) and (!down) and (!left) and (!right))
-				break;
+			
 		}
-		// Stop searching if all sides are blocked; check after each row
-		if ((!up) and (!down) and (!left) and (!right))
-			break;
+		
 	} // End of search loop
 	
+	// If the piece is not on the board return no moves
+	if(!pieceFound){
+		up = false;
+		down = false;
+		left = false;
+		right = false;
+	}
+
 	// Add open directions to moves vector
 	if (up)
 		moves.push_back(moveUp);
@@ -154,5 +167,27 @@ vector <vector<Move> > GameState::getAllMoves(){
 //Mutators
 void GameState::changeValue(int row, int column, int newValue){
 	board[row][column] = newValue;
+}
+
+void GameState::applyMove(Move move){
+	
+	int piece = move.getPiece();
+	char direction = move.getDirection();
+	int destination;
+
+	switch (direction) {
+		case 'u':
+			destination = 
+	
+
+
+
+
+
+	}	
+
+	
+
+
 
 }

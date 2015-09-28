@@ -29,3 +29,11 @@ void Move::printMove(){
 	else
 		cout << "direction " << direction << " unrecognized" << endl;
 }
+
+int Move::getPiece(){
+	return piece;
+}
+
+char Move::getDirection(){
+	return direction;
+}

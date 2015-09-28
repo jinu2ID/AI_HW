@@ -39,23 +39,32 @@ int main(int argc, char *argv[]) {
 	GameState myGame(startState);
 
 	// Test print function
+	cout << "Print Function Test" << endl;
 	myGame.printState();
+	cout << endl; 
 
 	// Test copy function
+	cout << "Copy Function Test" << endl;
 	GameState yourGame(myGame);
 
 	yourGame.changeValue(0,0,100);
 
+	cout << "Changed Copy" << endl;
 	yourGame.printState();
+	cout << "Original Unchanged" << endl;
 	myGame.printState();
+	cout << endl;
 
-	// Test puzzle solved fucntion
+	// Test puzzle solved function
+	cout << "Puzzle Solved Function Test" << endl;
 	if (myGame.checkSolved())
 		cout << "Solved!" << endl;
 	else
 		cout << "Not solved!" << endl;
+	cout << endl;
 
 	// Test showing piece's moves
+	cout << "Get Piece's Moves Function Test" << endl;
 	vector<Move> moves = myGame.getMoves(8);
 
 	if (moves.size() == 0)
@@ -66,6 +75,19 @@ int main(int argc, char *argv[]) {
 			moves[i].printMove();
 		}
 	}
+	cout << endl;
+
+	// Test get all moves
+	cout << "Get All Moves for State Function" << endl;
+	vector <vector<Move> > allMoves = myGame.getAllMoves();
+	int i, j;
+	for (i = 0; i < allMoves.size(); i++){
+		for (j = 0; j < allMoves[i].size(); j ++){
+			allMoves[i][j].printMove();
+
+		}
+	}
+	cout << endl;
 
 }
 

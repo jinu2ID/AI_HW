@@ -30,6 +30,7 @@ public:
 
 	//Mutators
 	void changeValue(int row, int column, int newValue);
+	void applyMove(Move move);
 
 private:
 	int width;

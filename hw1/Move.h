@@ -18,6 +18,8 @@ class Move{
 		
 		//Inspectors
 		void printMove();
+		int getPiece();
+		char getDirection();
 
 	private:
 		int piece;
