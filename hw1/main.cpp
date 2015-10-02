@@ -104,22 +104,41 @@ int main(int argc, char *argv[]) {
 	cout << endl;
 
 	// Test applyMoveCloning function
-	cout << "Apply Move Cloning Test" << endl;
-	Move newerMove(3, 'r');
+	cout << "Apply Move Cloning Test" << endl << "Enter piece" << endl;
+	cin >> piece;
+	cout << "Enter direction: u d l r" << endl;
+	cin >> dir;
+	Move newerMove(piece, dir);
 	GameState cloneState = myGame.applyMoveCloning(newerMove);
 	cloneState.printState();
 	cout << endl;
 
 	// Test compareState function
-	cout << "Compare States function test" << endl;
+	cout << "Compare States Function Test" << endl;
 	bool same = myGame.compareState(cloneState);
-	cout << same << endl;
+	cout << ( same ? "Same" : "Not Same") << endl;
+	GameState copyState(myGame);
+	same = myGame.compareState(copyState);
+	cout << ( same ? "Same" : "Not Same") << endl;
+	cout << endl;
+
+	// Test normalizeState function
+	cout << "Normalize State Function Test" << endl;
+	myGame.normalizeState();
+	myGame.printState();
+	cout << endl;
+
+	// Test randWalk function
+	cout << "Random Walk Function Test" << endl << "Enter a number" << endl;
+	int n;
+	cin >> n;
+	myGame.randomWalk(n);
 
 }
 
 
 //FUNCTION DEFINITIONS
-
+// Reads values from a file and converts them to a 2D vector
 vector< vector<int> > getValues(string fileName){
  
         // Open file
@@ -182,4 +201,22 @@ vector< vector<int> > getValues(string fileName){
 
 }
 
+// Test Functions
 
+// Test Print Function
+
+// Test Clone Function
+
+// Test Solved Function
+
+// Test Show Piece's Moves Function
+
+// Test Show All Moves Function
+
+// Test Clone and Apply Move Function
+
+// Test Compare State Function
+
+// Test Normalize Function
+
+// Test Random Walk Function

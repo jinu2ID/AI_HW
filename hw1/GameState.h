@@ -33,6 +33,9 @@ public:
 	void changeValue(int row, int column, int newValue);
 	void applyMove(Move move);
 	GameState applyMoveCloning(Move move);
+	void normalizeState();
+	void swapIdx(int idx1, int idx2);
+	void randomWalk(int n);
 
 private:
 	int width;

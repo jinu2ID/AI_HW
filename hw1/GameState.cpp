@@ -13,6 +13,7 @@ GameState class for Sliding Brick Puzzle
 #include <cstring>
 #include <stdlib.h>
 #include <sstream>
+#include <time.h>
 #include "GameState.h"
 #include "Move.h"
 
@@ -49,6 +50,7 @@ void GameState::printState(){
 	}
 }
 
+// Checks if game has been solved
 bool GameState::checkSolved(){
 // Iterate through matrix and look for -1(not solved)
 	int i,j;
@@ -165,6 +167,7 @@ vector <vector<Move> > GameState::getAllMoves(){
 
 }
 
+// Compares two gameStates and checks if they are the same
 bool GameState::compareState(GameState otherState){
 
 	int i,j;
@@ -191,7 +194,7 @@ void GameState::changeValue(int row, int column, int newValue){
 	board[row][column] = newValue;
 }
 
-
+// Applies a move to a gameState
 void GameState::applyMove(Move move){
 	
 	int piece = move.getPiece();
@@ -235,7 +238,6 @@ void GameState::applyMove(Move move){
   	else if (direction == 'd'){
 		int i,j;
 		// Find the piece on the board
-		cout << "Here1" << endl;
 		for (i = 0; i < height; i++){
 			for (j = 0; j < width; j++){
 				if (board[i][j] == piece){
@@ -326,10 +328,79 @@ void GameState::applyMove(Move move){
 	}
 }
 
+// Applies move to a clone of a gameState and returns clone
 GameState GameState::applyMoveCloning(Move move){
 	
 	vector<vector<int> > cloneVector = board;
 	GameState cloneState(cloneVector);
 	cloneState.applyMove(move);
 	return cloneState;
+}
+
+// Normalizes a gameState
+void GameState::normalizeState(){
+	int i,j;
+	int nextIdx = 3;
+	for(i = 0; i < height; i++){
+		for (j = 0; j < width; j++){
+			if (board[i][j] == nextIdx){
+				nextIdx++;
+			}
+			else if (board[i][j] > nextIdx){
+			this->swapIdx(nextIdx, board[i][j]);
+				nextIdx++;
+			}
+		}
+
+	}
+}
+
+void GameState::swapIdx(int idx1, int idx2){
+	int i,j;
+	for (i = 0; i < height; i++){
+		for (j = 0; j < width; j++){
+			if (board[i][j] == idx1){
+				board[i][j] = idx2;
+			}
+			else if(board[i][j] == idx2){
+				board[i][j] = idx1;
+			}
+		}
+
+	}
+}
+
+void GameState::randomWalk(int n){
+	
+	if (n < 1)
+		return;
+
+	this->printState();
+	cout << endl;
+
+	srand (time(NULL));
+
+	int i;
+	for (i = 0; i < n; i++){
+		// Generate all possible moves on game board
+		vector<vector<Move> > allMoves = this->getAllMoves();
+
+		// Randomly select a move
+		int randNo = rand() % allMoves.size();
+		int randNoTwo = rand() % allMoves[randNo].size();
+		// Execute move
+		this->applyMove(allMoves[randNo][randNoTwo]);
+		// Normalize game state
+		this->normalizeState();
+		// Print move to screen
+		allMoves[randNo][randNoTwo].printMove();
+		cout << endl;
+		this->printState();
+		cout << endl;
+		// Check if solved
+		if (this->checkSolved()){
+			cout << "Puzzle Solved!" << endl;
+			return;
+		}
+	}
 }

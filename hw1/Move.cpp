@@ -19,13 +19,13 @@ Move::Move(int value, char _direction){
 //Inspectors
 void Move::printMove(){
 	if(direction == 'u')
-	  cout << piece << " up" << endl;	
+	  cout << "(" << piece << ", up)" << endl;	
 	else if (direction == 'd')
-		cout << piece << " down" << endl;
+		cout << "(" << piece << ", down)" << endl;
 	else if (direction == 'l')
-		cout << piece << " left" << endl;
+		cout << "(" << piece << ", left)" << endl;
 	else if (direction == 'r')
-		cout << piece << " right" << endl;
+		cout << "(" << piece << ", right)" << endl;
 	else
 		cout << "direction " << direction << " unrecognized" << endl;
 }
