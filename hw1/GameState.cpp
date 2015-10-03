@@ -67,6 +67,11 @@ bool GameState::checkSolved(){
 // Returns possible moves for a piece
 vector<Move> GameState::getMoves(int piece){
 	
+	// Check if piece is master piece
+	bool masterPiece = false;
+	if (piece == 2)
+		masterPiece = true;
+
 	// Directions and vector to return possible moves
 
 	char u = 'u';
@@ -106,16 +111,40 @@ vector<Move> GameState::getMoves(int piece){
 				// If the piece above, below, left, or right of our piece is not 0
 				// or the same then that direction is completely blocked
 				if ((board[i-1][j] != 0) and (board[i-1][j] != piece)){
-					up = false;
+					if (masterPiece){ // If dealing with the masterpiece
+						if (board[i-1][j] != -1) // Check for goal
+							up = false;
+					}
+					else {
+						up = false;
+					}
 				}
 				if ((board[i+1][j] != 0) and (board[i+1][j] != piece)){
-					down = false;
+					if (masterPiece){
+						if (board[i+1][j] != -1)
+							down = false;
+					}
+					else {
+						down = false;
+					}
 				}
 				if ((board[i][j-1] != 0) and (board[i][j-1] != piece)){
-					left = false;
+					if (masterPiece){
+						if (board[i][j-1] != -1)
+							left = false;
+					}
+					else{
+						left = false;
+					}
 				}
 				if ((board[i][j+1] != 0) and (board[i][j+1] != piece)){
-					right = false;
+					if (masterPiece){
+						if (board[i][j+1] != -1)
+							right = false;
+					}
+					else {
+						right = false;
+					}
 				}
 			}
 			

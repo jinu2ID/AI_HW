@@ -1,0 +1,80 @@
+Jinu Jacob
+CS380-001
+HW1
+
+---------------------------------------------------------------------------------
+
+SUMMARY
+---------------------------------------------------------------------------------
+
+This program implements the Sliding Brick Puzzle. GameState.h/.cpp contain
+the the GameState class which handles the game board, getting and applying
+moves, cloning, checking if solved, comparing states, normalizingm, and
+random walks. 
+Move.h/.cpp is a class just to hold a piece value and direction
+to retrieving and applying moves. 
+main.cpp contains a few tests and the function which retrieves game state
+values from an input file.
+
+----------------------------------------------------------------------------------
+
+HOW TO RUN
+
+A set of tests for each function has been written in main.cpp.
+Run using: "make", "make HW1", or "make target=inputFile" where inputFile is
+a file with the values for a game state.
+
+If a input file is not specified the program will prompt the user for one.
+
+---------------------------------------------------------------------------------
+
+TESTS
+---------------------------------------------------------------------------------
+main.cpp includes the following tests in order:
+
+Print Test - will print the game state that has been read from file
+
+Clone Test - will copy a game state, change the copy, and then print the
+copy and the original. This is to show a deep copy has been made rather than a
+shallow copy.
+
+Puzzle Solved Test - will tell if a game state is solved. Prints "Solved!" or 
+"Not Solved!"
+
+Show Piece's Moves Test - will show all of a piece's possible moves. The program 
+will prompt a user to enter a piece on the game board. It will return all the 
+possible moves or "No moves" if the piece has no moves.
+
+Get All Moves Test - will get all the possible moves of
+all the pieces in the game state. It will print all possible moves to the
+screen.
+
+Apply Move Test - will apply a move to the game state. The program will
+prompt the user for a piece number and a direction( u for up, d for down, l
+for left, and r for right). The move will be applied and the resulting game
+state will be printed to the screen.
+
+Apply Move Cloning Test - will create a cloned state and apply a move (input
+by the user) to it. The resulting state will be printed.
+
+Compare States Test - will compare two states. First the altered clone state and the
+original state (not same). Then the original state and new unaltered copy of
+it(same).
+
+Normalize Test - will take the game state and normalize the piece values.
+
+Random Walk Test - will perform n random moves or stop when puzzle is
+solved. n is a number input by the user after being prompted.
+
+---------------------------------------------------------------------------------
+
+BUGS/ERRORS
+---------------------------------------------------------------------------------
+Note: The user may input any of  the pieces when asked for input
+including walls, empty spaces, or goals. Error-handling was omitted here
+since it was assumed that in the future the computer will handle making
+moves using the getMoves/getAllMoves functions. These functions only return
+legitimate moves.
+
+Test program will crash if you attempt to get all moves for a solved game
+state.

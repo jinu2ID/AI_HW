@@ -116,9 +116,11 @@ int main(int argc, char *argv[]) {
 	// Test compareState function
 	cout << "Compare States Function Test" << endl;
 	bool same = myGame.compareState(cloneState);
+	cout << "Comparing to previously changed clone state" << endl;
 	cout << ( same ? "Same" : "Not Same") << endl;
 	GameState copyState(myGame);
 	same = myGame.compareState(copyState);
+	cout << "Comparing to a copy of original game state" << endl;
 	cout << ( same ? "Same" : "Not Same") << endl;
 	cout << endl;
 
@@ -201,22 +203,3 @@ vector< vector<int> > getValues(string fileName){
 
 }
 
-// Test Functions
-
-// Test Print Function
-
-// Test Clone Function
-
-// Test Solved Function
-
-// Test Show Piece's Moves Function
-
-// Test Show All Moves Function
-
-// Test Clone and Apply Move Function
-
-// Test Compare State Function
-
-// Test Normalize Function
-
-// Test Random Walk Function
