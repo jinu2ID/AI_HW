@@ -196,6 +196,32 @@ vector <vector<Move> > GameState::getAllMoves(){
 
 }
 
+//Returns all possible moves for all pieces in one vector rather than a 2D
+//vector. Might replace the one above with this one
+vector<Move> GameState::getAllMovesV2(){
+	vector<Move> allMoves;
+	// Iterate through every piece on the board
+	int i,j;
+	
+	for (i = 0; i < height; i++){
+		for (j = 0; j < width; j++){
+			// Get the piece's moveas
+			int x = board[i][j];
+			vector<Move> moves = this->getMoves(x);
+			// If the piece has moves add it to our collection of all moves
+			if(moves.size() != 0){
+				int k;
+				for (k = 0;k < moves.size(); k++)
+					allMoves.push_back(moves[k]);
+			}
+		}
+	}
+
+	return allMoves;
+
+
+}
+
 // Compares two gameStates and checks if they are the same
 bool GameState::compareState(GameState otherState){
 

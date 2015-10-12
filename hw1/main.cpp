@@ -12,12 +12,13 @@ Main program to test GameState class
 #include "Move.h"
 #include "Move.cpp"
 #include <string>
+#include <algorithm>
 
 using namespace std;
 
 //FUNCTION PROTOTYPES
 vector< vector<int> > getValues(string fileName);
-
+vector<Move> backTrack(vector<GameState> stateList, int depthBound);
 
 int main(int argc, char *argv[]) {
 
@@ -203,3 +204,39 @@ vector< vector<int> > getValues(string fileName){
 
 }
 
+// BackTrack algorithm searches for solution 
+vector<Move> backTrack(vector<GameState> stateList, int depthBound){
+	
+	gameState state = stateList[0];
+	// Check that state is not already in stateList i.e. it is a leaf
+	if (find(stateList.begin(), stateList.end(), state) != stateList.end()){
+		vector<Move> fail;
+		return fail;
+	}
+	// Check if goal state
+	if (state.checkSolved()){
+		vector<Move> success;
+		Move newMove(0,0);
+		success.push_back(newMove);
+		return success;
+	}
+	if(stateList.size() > depthBound){
+		vector<Move> fail;
+		return fail;
+	}
+	
+	int i;
+	vector<Move> moves = state.getAllMovesV2();
+	for (i = 0; i < moves.size(); i++){
+		// New node 
+		GameState newState = state.applyMoveCloning(moves[i]);
+		// Add node to tree
+		vector<GameState> newStateList = stateList;
+		newStateList.insert(newStateList.begin(), newState);
+		vector<Move> path = backTrack(newStateList, depthBound);
+		if (!path.empty()){
+			path.push_back(moves[i]);
+			return path;
+		}
+	}
+}	

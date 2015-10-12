@@ -27,6 +27,7 @@ public:
 	bool checkSolved();
 	vector<Move> getMoves(int piece);
 	vector <vector<Move> > getAllMoves();
+	vector<Move> getAllMovesV2();
 	bool compareState(GameState otherState);
 
 	//Mutators
