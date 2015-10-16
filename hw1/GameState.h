@@ -21,7 +21,7 @@ public:
 	//Constructors
 	GameState(vector< vector<int> > _matrix);
 	GameState(const GameState& obj);           //Copy constructor
-	
+		
 	//Inspectors
 	void printState();
 	bool checkSolved();
@@ -37,12 +37,35 @@ public:
 	void normalizeState();
 	void swapIdx(int idx1, int idx2);
 	void randomWalk(int n);
+	
+	// Overload operators
+	GameState& operator= (const GameState &gSource);
+	friend bool operator== (const GameState &g1, const GameState &g2);
 
 private:
 	int width;
 	int height;
-	vector<vector<int> > board;         // 2D vector to hold game state
-
+	vector<vector<int> > board;	// 2D vector to hold game state
 };
+
+// Operator
+
+bool operator== (const GameState &g1, const GameState &g2){
+	return g1.board == g2.board;
+}
+GameState& GameState::operator= (const GameState &gSource){
+   
+	// Check for self-assignment
+	if (this == &gSource);
+		return *this;
+
+	// Copy
+	width = gSource.width;
+	height = gSource.height;
+	board = gSource.board;
+
+	return *this;
+
+}
 
 #endif

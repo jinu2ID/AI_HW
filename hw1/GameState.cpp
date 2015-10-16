@@ -28,6 +28,7 @@ GameState::GameState(vector< vector<int> > _matrix){
 	width = _matrix[0].size();
 }
 
+// Copy constructor
 GameState::GameState(const GameState& obj){
 	board = obj.board;
 	height = obj.height;
@@ -139,7 +140,7 @@ vector<Move> GameState::getMoves(int piece){
 				}
 				if ((board[i][j+1] != 0) and (board[i][j+1] != piece)){
 					if (masterPiece){
-						if (board[i][j+1] != -1)
+						if ((board[i][j+1] != -1) or (j+1 > width-1))
 							right = false;
 					}
 					else {
@@ -178,6 +179,9 @@ vector<Move> GameState::getMoves(int piece){
 vector <vector<Move> > GameState::getAllMoves(){
 	
 	vector <vector<Move> > allMoves;
+	// If game is solved return empty vector
+	if (this->checkSolved())
+		return allMoves;
 	// Iterate through every piece on the board
 	int i,j;
 
@@ -253,6 +257,7 @@ void GameState::changeValue(int row, int column, int newValue){
 void GameState::applyMove(Move move){
 	
 	int piece = move.getPiece();
+	cout << "Piece: " << piece << endl;
 	char direction = move.getDirection();
 	vector <vector<int> > destinations; // This vector will store positions
 	// our piece is moving to (only for right and down)
@@ -350,12 +355,14 @@ void GameState::applyMove(Move move){
 	}
 	// If the piece is moving right. This is a special case similar to down
   	else if (direction == 'r'){
+		cout << "HERE" << endl;
 		int i,j;
 		// Find the piece on the board
 		for (i = 0; i < height; i++){
 			for (j = 0; j < width; j++){
 				if (board[i][j] == piece){
 					vector<int> newPosition;
+					cout << "x,y: " << i << "," << j << endl;
 					newPosition.push_back(i);
 					newPosition.push_back(j+1);
 					destinations.push_back(newPosition);
@@ -373,7 +380,9 @@ void GameState::applyMove(Move move){
 		// Move piece to new position
 		int m;
 		for (m = 0; m < destinations.size(); m++){
+			cout << "HERE2" <<  endl;
 			board[destinations[m][0]][destinations[m][1]] = piece;
+			cout << destinations[m][0] << destinations[m][1] << endl;
 		}
 		// Change old positions to zero
 		int k;
@@ -389,6 +398,7 @@ GameState GameState::applyMoveCloning(Move move){
 	vector<vector<int> > cloneVector = board;
 	GameState cloneState(cloneVector);
 	cloneState.applyMove(move);
+	cloneState.printState();
 	return cloneState;
 }
 
@@ -425,7 +435,7 @@ void GameState::swapIdx(int idx1, int idx2){
 	}
 }
 
-void GameState::randomWalk(int n){
+/*void GameState::randomWalk(int n){
 	
 	if (n < 1)
 		return;
@@ -458,4 +468,8 @@ void GameState::randomWalk(int n){
 			return;
 		}
 	}
-}
+}*/
+
+
+
+

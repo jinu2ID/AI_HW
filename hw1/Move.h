@@ -15,11 +15,15 @@ class Move{
 	public:
 		//Constructors
 		Move(int value, char _direction);
-		
+		Move(const Move &mSource);		
 		//Inspectors
 		void printMove();
 		int getPiece();
 		char getDirection();
+		
+		// Overload operators
+		friend bool operator== (const Move &m1, const Move &m2);
+		Move& operator= (const Move &mSource);
 
 	private:
 		int piece;
@@ -27,5 +31,21 @@ class Move{
 
 
 };
+
+bool operator== (const Move &m1, const Move &m2){
+	return ((m1.piece == m2.piece) and (m1.direction == m2.direction));
+}
+
+Move& Move::operator= (const Move &mSource){
+	// Check for self-assignment
+	if(this == &mSource)
+		return *this;
+
+	// Copy
+	piece = mSource.piece;
+	direction = mSource.direction;
+
+	return *this;
+}
 
 #endif

@@ -13,12 +13,14 @@ Main program to test GameState class
 #include "Move.cpp"
 #include <string>
 #include <algorithm>
+#include <vector>
 
 using namespace std;
 
 //FUNCTION PROTOTYPES
 vector< vector<int> > getValues(string fileName);
-vector<Move> backTrack(vector<GameState> stateList, int depthBound);
+bool backTrack(vector<GameState> stateList, int depthBound, vector<Move> path, vector<vector<Move> > &pathList);
+bool bfs(GameState state);
 
 int main(int argc, char *argv[]) {
 
@@ -37,9 +39,16 @@ int main(int argc, char *argv[]) {
 
 	vector< vector<int> > startState = getValues(file);
 
+	GameState 
 	GameState myGame(startState);
+	myGame.printState();
+	// Test breadth-first-search
+	if( bfs(myGame))
+		cout << "Solved" << endl;
+	else
+		cout << "Not solved" << endl;
 
-	// Test print function
+/*	// Test print function
 	cout << "Print Function Test" << endl;
 	myGame.printState();
 	cout << endl; 
@@ -67,8 +76,8 @@ int main(int argc, char *argv[]) {
 	// Test showing piece's moves
 	cout << "Get Piece's Moves Function Test" << endl << "Enter piece" <<
 		endl;
-	int piece;
-	cin >> piece;
+*/	int piece;
+/*	cin >> piece;
 	vector<Move> moves = myGame.getMoves(piece);
 
 	if (moves.size() == 0)
@@ -136,7 +145,7 @@ int main(int argc, char *argv[]) {
 	int n;
 	cin >> n;
 	myGame.randomWalk(n);
-
+*/
 }
 
 
@@ -205,27 +214,22 @@ vector< vector<int> > getValues(string fileName){
 }
 
 // BackTrack algorithm searches for solution 
-vector<Move> backTrack(vector<GameState> stateList, int depthBound){
+bool backTrack(vector<GameState> stateList, int depthBound, vector<Move> path, vector<vector<Move> > &pathList){
 	
-	gameState state = stateList[0];
+	GameState state = stateList[0];
 	// Check that state is not already in stateList i.e. it is a leaf
-	if (find(stateList.begin(), stateList.end(), state) != stateList.end()){
-		vector<Move> fail;
-		return fail;
-	}
+	if (find(stateList.begin()+1, stateList.end(), state) != stateList.end()){
+		return false;
+	}		
 	// Check if goal state
 	if (state.checkSolved()){
-		vector<Move> success;
-		Move newMove(0,0);
-		success.push_back(newMove);
-		return success;
+		return true;
 	}
 	if(stateList.size() > depthBound){
-		vector<Move> fail;
-		return fail;
+		return false;
 	}
 	
-	int i;
+	int i,j;
 	vector<Move> moves = state.getAllMovesV2();
 	for (i = 0; i < moves.size(); i++){
 		// New node 
@@ -233,10 +237,72 @@ vector<Move> backTrack(vector<GameState> stateList, int depthBound){
 		// Add node to tree
 		vector<GameState> newStateList = stateList;
 		newStateList.insert(newStateList.begin(), newState);
-		vector<Move> path = backTrack(newStateList, depthBound);
-		if (!path.empty()){
-			path.push_back(moves[i]);
-			return path;
+		// Add move to path
+		vector<Move> newPath = path;
+		newPath.push_back(moves[i]);
+		
+		// If move solves puzzle add path to pathList
+		bool solved = false; 
+		solved = backTrack(newStateList, depthBound, newPath, pathList);
+		if (solved){
+			if (find(pathList.begin(), pathList.end(), newPath) == pathList.end()){
+				pathList.push_back(newPath);
+			}
 		}
 	}
-}	
+	return false;
+}
+
+// Breadth First Search
+bool bfs(GameState state){
+
+	GameState node = state;
+
+	// Check if initial state is goal
+	if (node.checkSolved()){
+		return true;
+	}
+
+	vector<GameState> frontier;
+	frontier.push_back(node);
+	vector<GameState> explored;
+	int counter = 0;
+
+	while(counter < 5){
+	
+		node = frontier[0];   // choose shallowest frontier in node
+		frontier.erase(frontier.begin());
+		explored.push_back(node); // add node to explored
+		vector<Move> moves = node.getAllMovesV2();
+		int j;
+		for (j = 0; j < moves.size(); j++)
+			moves[j].printMove();
+		int i;
+		for (i = 0; i < moves.size(); i++){
+			Move newMove(moves[i]);
+			GameState child = node.applyMove(newMove);
+			newMove.printMove();
+			child.printState();
+			// Check if child is already in frontier or explored
+			int k;
+			for (k = 0; k < frontier.size(); k++){
+				if child == frontier[k];
+					continue;
+			}
+			for (k = 0; k < explored.size(); k++){
+				if child == explored[k];
+					continue
+			}
+			if (child.checkSolved()){ // Found solution
+				child.printState();
+				return true;
+			}
+				frontier.push_back(child); // Add child to frontier to check its children
+			}
+		}
+		counter ++;
+	}
+	cout << frontier.size() << endl;
+	return false;
+
+}

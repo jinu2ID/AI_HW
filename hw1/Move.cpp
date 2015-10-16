@@ -16,6 +16,12 @@ Move::Move(int value, char _direction){
 	direction = _direction;
 }
 
+Move::Move(const Move &mSource){
+	
+	piece = mSource.piece;
+	direction = mSource.direction;
+}
+
 //Inspectors
 void Move::printMove(){
 	if(direction == 'u')
