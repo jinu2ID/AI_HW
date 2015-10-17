@@ -56,8 +56,8 @@ bool operator== (const GameState &g1, const GameState &g2){
 GameState& GameState::operator= (const GameState &gSource){
    
 	// Check for self-assignment
-	if (this == &gSource);
-		return *this;
+//	if (this == &gSource);
+//		return *this;
 
 	// Copy
 	width = gSource.width;

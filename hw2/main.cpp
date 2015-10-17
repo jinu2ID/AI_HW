@@ -32,7 +32,7 @@ int main(){
 	stateList.push_back(myGame);
 	int callCount = 0;
 	int failCount = 0;
-	vector<Move> solution = backTrack(stateList, 5, callCount, failCount);
+	vector<Move> solution = backTrack(stateList, 3, callCount, failCount);
 
 	int j;
 	for (j = 0; j < solution.size(); j++)

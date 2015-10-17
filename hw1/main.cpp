@@ -21,6 +21,7 @@ using namespace std;
 vector< vector<int> > getValues(string fileName);
 bool backTrack(vector<GameState> stateList, int depthBound, vector<Move> path, vector<vector<Move> > &pathList);
 bool bfs(GameState state);
+bool checkDuplicate(GameState child, vector<GameState> list);
 
 int main(int argc, char *argv[]) {
 
@@ -38,8 +39,7 @@ int main(int argc, char *argv[]) {
 	}
 
 	vector< vector<int> > startState = getValues(file);
-
-	GameState 
+ 
 	GameState myGame(startState);
 	myGame.printState();
 	// Test breadth-first-search
@@ -271,38 +271,48 @@ bool bfs(GameState state){
 	while(counter < 5){
 	
 		node = frontier[0];   // choose shallowest frontier in node
-		frontier.erase(frontier.begin());
+	//	cout << "Node " << counter << endl;
+	//	node.printState();
+		frontier.erase(frontier.begin()); // Remove that node from frontier
 		explored.push_back(node); // add node to explored
-		vector<Move> moves = node.getAllMovesV2();
-		int j;
-		for (j = 0; j < moves.size(); j++)
-			moves[j].printMove();
+		vector<Move> moves = node.getAllMovesV2(); // Get all moves for that node
+
 		int i;
 		for (i = 0; i < moves.size(); i++){
-			Move newMove(moves[i]);
-			GameState child = node.applyMove(newMove);
-			newMove.printMove();
-			child.printState();
+			
+			// Apply move to node
+			GameState child = node.applyMoveCloning(moves[i]);
+			
 			// Check if child is already in frontier or explored
-			int k;
-			for (k = 0; k < frontier.size(); k++){
-				if child == frontier[k];
-					continue;
-			}
-			for (k = 0; k < explored.size(); k++){
-				if child == explored[k];
-					continue
-			}
+			if (checkDuplicate(child, frontier))
+				continue;
+			if (checkDuplicate(child, explored))
+				continue;
+
 			if (child.checkSolved()){ // Found solution
 				child.printState();
 				return true;
 			}
-				frontier.push_back(child); // Add child to frontier to check its children
-			}
+			frontier.push_back(child); // Add child to frontier to check its children
 		}
-		counter ++;
+		counter++;
 	}
-	cout << frontier.size() << endl;
+
+	return false;
+
+}
+
+bool checkDuplicate(GameState child, vector<GameState> list){
+	GameState childCopy = child;
+	childCopy.normalizeState();
+
+	int k;
+	for (k = 0; k < list.size(); k++){
+		GameState inList = list[k];
+		inList.normalizeState();
+		if (child == inList)
+			return true;
+	}
 	return false;
 
 }
