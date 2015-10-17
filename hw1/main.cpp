@@ -266,9 +266,8 @@ bool bfs(GameState state){
 	vector<GameState> frontier;
 	frontier.push_back(node);
 	vector<GameState> explored;
-	int counter = 0;
-
-	while(counter < 5){
+	
+	while(!frontier.empty()){
 	
 		node = frontier[0];   // choose shallowest frontier in node
 	//	cout << "Node " << counter << endl;
@@ -295,7 +294,6 @@ bool bfs(GameState state){
 			}
 			frontier.push_back(child); // Add child to frontier to check its children
 		}
-		counter++;
 	}
 
 	return false;

@@ -1,0 +1,35 @@
+Jinu Jacob
+CS380-001
+HW2
+
+---------------------------------------------------------------------------------
+
+SUMMARY
+---------------------------------------------------------------------------------
+
+This program attempted to implement breadth-first search for the sliding
+brick puzzle. DFS and IDS were NOT implemented.
+This program could only solve LEVEL 0 problems with BFS. It seemed to run in an
+infinite loop at LEVEL 1.
+This program DOES NOT print the path to the solution.
+
+----------------------------------------------------------------------------------
+
+HOW TO RUN
+
+Run using: "make", "make HW1", or "make target=inputFile" where inputFile is
+a file with the values for a game state.
+
+If a input file is not specified the program will prompt the user for one.
+
+The program will then print the game state and run BFS on it. It print the
+solved state if the puzzle is solved.
+
+BUGS/ERRORS
+----------------------------------------------------------------------------------
+This program falls short of the directions in the assignment. I have
+pointed out its shortcomings in order to save the grader's time.
+
+Along with the correct implementation of the BFS, DFS, and IDS other
+improvements would include using lists instead of vectors in C++ for
+constant time insert and erase.
