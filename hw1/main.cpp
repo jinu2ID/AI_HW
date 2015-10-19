@@ -19,9 +19,6 @@ using namespace std;
 
 //FUNCTION PROTOTYPES
 vector< vector<int> > getValues(string fileName);
-bool backTrack(vector<GameState> stateList, int depthBound, vector<Move> path, vector<vector<Move> > &pathList);
-bool bfs(GameState state);
-bool checkDuplicate(GameState child, vector<GameState> list);
 
 int main(int argc, char *argv[]) {
 
@@ -42,11 +39,6 @@ int main(int argc, char *argv[]) {
  
 	GameState myGame(startState);
 	myGame.printState();
-	// Test breadth-first-search
-	if( bfs(myGame))
-		cout << "Solved" << endl;
-	else
-		cout << "Not solved" << endl;
 
 /*	// Test print function
 	cout << "Print Function Test" << endl;
@@ -76,8 +68,8 @@ int main(int argc, char *argv[]) {
 	// Test showing piece's moves
 	cout << "Get Piece's Moves Function Test" << endl << "Enter piece" <<
 		endl;
-*/	int piece;
-/*	cin >> piece;
+	int piece;
+	cin >> piece;
 	vector<Move> moves = myGame.getMoves(piece);
 
 	if (moves.size() == 0)

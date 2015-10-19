@@ -48,16 +48,12 @@ private:
 	vector<vector<int> > board;	// 2D vector to hold game state
 };
 
-// Operator
+// Overloaded Operators
 
 bool operator== (const GameState &g1, const GameState &g2){
 	return g1.board == g2.board;
 }
 GameState& GameState::operator= (const GameState &gSource){
-   
-	// Check for self-assignment
-//	if (this == &gSource);
-//		return *this;
 
 	// Copy
 	width = gSource.width;
