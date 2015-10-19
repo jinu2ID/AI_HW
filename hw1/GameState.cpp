@@ -21,6 +21,13 @@ using namespace std;
 
 //GameState constructors
 
+GameState::GameState(){
+	
+	board = vector< vector<int> >();
+	height = 0;
+	width = 0;
+}
+
 GameState::GameState(vector< vector<int> > _matrix){
 
 	board = _matrix;
@@ -75,8 +82,7 @@ vector<Move> GameState::getMoves(int piece){
 
 	// Directions and vector to return possible moves
 
-	char u = 'u';
-	Move moveUp(piece, u);
+	Move moveUp(piece, 'u');
 	Move moveDown(piece, 'd');
 	Move moveLeft(piece, 'l');
 	Move moveRight(piece, 'r');
@@ -227,7 +233,7 @@ vector<Move> GameState::getAllMovesV2(){
 }
 
 // Compares two gameStates and checks if they are the same
-bool GameState::compareState(GameState otherState){
+bool GameState::compareState(GameState otherState){  //[ NOTE 1]
 
 	int i,j;
 	
@@ -246,6 +252,10 @@ bool GameState::compareState(GameState otherState){
 	return true;
 
 }
+
+// [NOTE 1]: This method is redundant since the comparison operator == has been
+// overloaded. A method that compares two states was required for this
+// assignment though.
 
 
 //Mutators
@@ -429,7 +439,7 @@ void GameState::swapIdx(int idx1, int idx2){
 	}
 }
 
-/*void GameState::randomWalk(int n){
+void GameState::randomWalk(int n){
 	
 	if (n < 1)
 		return;
@@ -462,7 +472,7 @@ void GameState::swapIdx(int idx1, int idx2){
 			return;
 		}
 	}
-}*/
+}
 
 
 

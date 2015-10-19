@@ -7,18 +7,23 @@ Main program to test GameState class
 #include <fstream>
 #include <stdio.h>
 #include <iostream>
+#include <string>
+#include <algorithm>
+#include <vector>
+#include <list>
 #include "GameState.h"
 #include "GameState.cpp"
 #include "Move.h"
 #include "Move.cpp"
-#include <string>
-#include <algorithm>
-#include <vector>
+#include "Node.h"
+#include "Node.cpp"
 
 using namespace std;
 
 //FUNCTION PROTOTYPES
 vector< vector<int> > getValues(string fileName);
+bool bfs(GameState startState);
+bool checkDuplicate(GameState state, vector<Node> nodeList);
 
 int main(int argc, char *argv[]) {
 
@@ -40,6 +45,13 @@ int main(int argc, char *argv[]) {
 	GameState myGame(startState);
 	myGame.printState();
 
+	Move m1(2, 'l');
+	GameState cloneGame = myGame.applyMoveCloning(m1);
+
+
+	cout << bfs(myGame) << endl;
+	
+	
 /*	// Test print function
 	cout << "Print Function Test" << endl;
 	myGame.printState();
@@ -201,8 +213,73 @@ vector< vector<int> > getValues(string fileName){
 
 		  }
 
+		  fin.close();
 		  return matrix;
 
 }
 
+bool bfs(GameState startState){
 
+	Node graphNode(startState);
+	
+	// Check if initial state is goal state
+	if (startState.checkSolved())
+		return true;
+
+	// FIFO Queues
+	vector<Node> openList;		// For nodes that need to be visited
+	vector<Node> closedList;		// For nodes that have already been visited
+	
+	openList.push_back(graphNode);
+
+	while(!openList.empty()){
+
+		// Get shallowest node in open list
+		Node parent = openList.front();
+		openList.erase(openList.begin());
+
+		// Add Node to closed list
+		closedList.push_back(parent);
+
+		// Get all moves for state
+		vector<Move> moves = parent.getState().getAllMovesV2();
+
+		// For each move create applyMoveCloning and create node
+		int i;
+		for ( i = 0; i < moves.size(); i++){
+
+			// Create child state by apply move to parent
+			GameState childState = parent.getState().applyMoveCloning(moves[i]);
+			childState.normalizeState();
+			Node child(childState, &parent);
+
+			// Check if Node is in open or closed lists
+			if ((find(openList.begin(), openList.end(), child) == openList.end()) and
+				 (find(closedList.begin(), closedList.end(), child) == closedList.end())){
+					
+				// Check if Node has goal state
+				if (child.checkSolved())
+					return true;
+				// Add Node to open list
+				else{
+					openList.push_back(child);
+				}
+			}
+		}
+	}
+
+	return false;
+
+}
+
+bool checkDuplicate(GameState state, vector<Node> nodeList){
+	
+	// Compare state to each node in list
+	int i;
+	for ( i = 0; i < nodeList.size(); i++){
+		GameState fromList = nodeList[i].getState();
+		if (fromList == state)
+			return true;
+	}
+	return false;
+}

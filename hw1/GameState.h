@@ -19,6 +19,7 @@ class GameState {
 
 public:
 	//Constructors
+	GameState();
 	GameState(vector< vector<int> > _matrix);
 	GameState(const GameState& obj);           //Copy constructor
 		
@@ -28,7 +29,7 @@ public:
 	vector<Move> getMoves(int piece);
 	vector <vector<Move> > getAllMoves();
 	vector<Move> getAllMovesV2();
-	bool compareState(GameState otherState);
+	bool compareState(const GameState otherState);
 
 	//Mutators
 	void changeValue(int row, int column, int newValue);
