@@ -14,6 +14,7 @@ class Move{
 
 	public:
 		//Constructors
+		Move();
 		Move(int value, char _direction);
 		Move(const Move &mSource);		
 		//Inspectors

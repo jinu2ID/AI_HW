@@ -15,25 +15,38 @@ Node::Node(){
 
 	state = GameState();
 	parent = NULL;
+	parentMove = Move();
 }
 
 Node::Node(GameState _state){
 
 	state = _state;
 	parent = NULL;
+	parentMove = Move();
 }
 
 Node::Node(GameState _state, Node *_parent){
 
 	state = _state;
 	parent = _parent;
+	parentMove = Move();
+}
+
+Node::Node(GameState _state, Node *_parent, Move _parentMove){
+	
+	state = _state;
+	parent = _parent;
+	parentMove = _parentMove;
+}
+
+// Copy Constructor
+Node::Node(const Node &nSource){
+	state = nSource.state;
+	parent = nSource.parent;
+	parentMove = nSource.parentMove;
 }
 
 // Inspectors
-GameState Node::getState(){
-	return state;
-}
-
 bool Node::checkSolved(){
 
 	return state.checkSolved();
@@ -46,6 +59,16 @@ bool Node::compareNode(const Node otherNode){
 }
 
 void Node::printNode(){
-
+	
+	parentMove.printMove();
 	state.printState();
+}
+
+// Accessors
+GameState Node::getState(){
+	return state;
+}
+
+Node* Node::getParent(){
+	return parent;
 }

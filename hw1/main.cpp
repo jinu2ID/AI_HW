@@ -22,7 +22,7 @@ using namespace std;
 
 //FUNCTION PROTOTYPES
 vector< vector<int> > getValues(string fileName);
-bool bfs(GameState startState);
+vector<Node> bfs(GameState startState);
 bool checkDuplicate(GameState state, vector<Node> nodeList);
 
 int main(int argc, char *argv[]) {
@@ -45,12 +45,7 @@ int main(int argc, char *argv[]) {
 	GameState myGame(startState);
 	myGame.printState();
 
-	Move m1(2, 'l');
-	GameState cloneGame = myGame.applyMoveCloning(m1);
-
-
-	cout << bfs(myGame) << endl;
-	
+	vector<Node> solution = bfs(myGame);
 	
 /*	// Test print function
 	cout << "Print Function Test" << endl;
@@ -218,15 +213,16 @@ vector< vector<int> > getValues(string fileName){
 
 }
 
-bool bfs(GameState startState){
+vector<Node> bfs(GameState startState){
 
 	Node graphNode(startState);
+	vector<Node> path; // will store path to solution if it exists
 	
 	// Check if initial state is goal state
 	if (startState.checkSolved())
-		return true;
+		return path;
 
-	// FIFO Queues
+	// Vectors used a FIFO queues
 	vector<Node> openList;		// For nodes that need to be visited
 	vector<Node> closedList;		// For nodes that have already been visited
 	
@@ -237,7 +233,7 @@ bool bfs(GameState startState){
 		// Get shallowest node in open list
 		Node parent = openList.front();
 		openList.erase(openList.begin());
-
+		
 		// Add Node to closed list
 		closedList.push_back(parent);
 
@@ -251,15 +247,28 @@ bool bfs(GameState startState){
 			// Create child state by apply move to parent
 			GameState childState = parent.getState().applyMoveCloning(moves[i]);
 			childState.normalizeState();
-			Node child(childState, &parent);
+
+			Node child(childState, &(closedList.back()), moves[i]);
 
 			// Check if Node is in open or closed lists
 			if ((find(openList.begin(), openList.end(), child) == openList.end()) and
 				 (find(closedList.begin(), closedList.end(), child) == closedList.end())){
 					
 				// Check if Node has goal state
-				if (child.checkSolved())
-					return true;
+				if (child.checkSolved()){
+					Node* parentPtr;
+					parentPtr = &child;
+					// Walk backwards and add nodes to path
+					while(true){
+						path.insert(path.begin(), *parentPtr);
+						parentPtr = parentPtr->getParent();
+						parentPtr->printNode();
+						cout << "HERE" << endl;
+						if (parentPtr == NULL)
+							break;
+					}
+					return path;
+				}
 				// Add Node to open list
 				else{
 					openList.push_back(child);
@@ -268,7 +277,7 @@ bool bfs(GameState startState){
 		}
 	}
 
-	return false;
+	return path;
 
 }
 

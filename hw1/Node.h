@@ -20,25 +20,38 @@ class Node{
 		Node();
 		Node(GameState _state);
 		Node(GameState _state, Node *_parent);
+		Node(GameState _state, Node *_parent, Move _parentMove);
+		Node(const Node & nSource);
 
 		// Inspectors
-		GameState getState();
 		bool compareNode(const Node otherNode);
 		bool checkSolved();
 		void printNode();
 
+		// Access
+		GameState getState();
+		Node* getParent();
+
 		// Overload operators
 		friend bool operator== (const Node &n1, const Node &n2);
+		Node& operator= (const Node &nSource);
 
 	private:
 		GameState state;
 		Node *parent;
+		Move parentMove;
 
 
 };
 
 bool operator== (const Node &n1, const Node &n2){
 	return (n1.state == n2.state);
+}
+
+Node& Node::operator= (const Node &nSource){
+	state = nSource.state;
+	parent = nSource.parent;
+	parentMove = nSource.parentMove;
 }
 
 #endif
