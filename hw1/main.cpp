@@ -25,6 +25,7 @@ vector< vector<int> > getValues(string fileName);
 vector<Node> bfs(GameState startState);
 bool checkDuplicate(GameState state, vector<Node> nodeList);
 
+
 int main(int argc, char *argv[]) {
 
 	// Test creating GameState from file
@@ -46,6 +47,10 @@ int main(int argc, char *argv[]) {
 	myGame.printState();
 
 	vector<Node> solution = bfs(myGame);
+
+	int i;
+	for ( i = 0; i < solution.size(); i++)
+		solution[i].printNode();
 	
 /*	// Test print function
 	cout << "Print Function Test" << endl;
@@ -231,25 +236,27 @@ vector<Node> bfs(GameState startState){
 	while(!openList.empty()){
 
 		// Get shallowest node in open list
-		Node parent = openList.front();
+		Node* parent = new Node;
+		*parent = openList.front();
 		openList.erase(openList.begin());
 		
 		// Add Node to closed list
-		closedList.push_back(parent);
+		closedList.push_back(*parent);
 
 		// Get all moves for state
-		vector<Move> moves = parent.getState().getAllMovesV2();
+		vector<Move> moves = parent->getState().getAllMovesV2();
 
 		// For each move create applyMoveCloning and create node
 		int i;
 		for ( i = 0; i < moves.size(); i++){
 
 			// Create child state by apply move to parent
-			GameState childState = parent.getState().applyMoveCloning(moves[i]);
+			GameState childState = parent->getState().applyMoveCloning(moves[i]);
 			childState.normalizeState();
 
-			Node child(childState, &(closedList.back()), moves[i]);
+			Node child(childState, parent, moves[i]);
 
+//			child.getParent()->getParent()->printNode();
 			// Check if Node is in open or closed lists
 			if ((find(openList.begin(), openList.end(), child) == openList.end()) and
 				 (find(closedList.begin(), closedList.end(), child) == closedList.end())){
@@ -262,10 +269,10 @@ vector<Node> bfs(GameState startState){
 					while(true){
 						path.insert(path.begin(), *parentPtr);
 						parentPtr = parentPtr->getParent();
-						parentPtr->printNode();
-						cout << "HERE" << endl;
-						if (parentPtr == NULL)
+						if (parentPtr->getParent() == NULL){ // At root node
+							path.insert(path.begin(), *parentPtr);
 							break;
+						}
 					}
 					return path;
 				}
