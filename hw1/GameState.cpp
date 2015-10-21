@@ -446,6 +446,11 @@ void GameState::swapIdx(int idx1, int idx2){
 	}
 }
 
+vector< vector<int> > GameState::getBoard(){
+	vector< vector<int> > boardCopy = board;
+	return board;
+}
+
 void GameState::randomWalk(int n){
 	
 	if (n < 1)

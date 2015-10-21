@@ -9,6 +9,7 @@ This class will be used to perform searches such as BFS amd DFS
 #ifndef _NODE_
 #define _NODE_
 
+#include <string> 
 #include "GameState.h"
 
 using namespace std;
@@ -35,6 +36,9 @@ class Node{
 		// Overload operators
 		friend bool operator== (const Node &n1, const Node &n2);
 		Node& operator= (const Node &nSource);
+		
+
+		string hashNode();
 
 	private:
 		GameState state;

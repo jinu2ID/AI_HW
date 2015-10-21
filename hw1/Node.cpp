@@ -5,6 +5,9 @@ jj559@drexel.edi
 node class implementation for Sliding Brick Puzzle
 */
 
+#include <vector>
+#include <string>
+#include <iostream>
 #include "Node.h"
 #include "GameState.h"
 
@@ -71,4 +74,24 @@ GameState Node::getState(){
 
 Node* Node::getParent(){
 	return parent;
+}
+
+// Creates a hash from a gameState by converting the 2D vector to a single
+// string
+string Node::hashNode(){
+
+	string hash;   // Stores hash
+	vector< vector<int> > state = this->getState().getBoard();
+
+	int i,j;
+	for ( i = 0; i < state.size(); i++){
+		for (j = 0; j < state[i].size(); j++){
+			// Convert number to string and append to hash string
+			int number = state[i][j];
+			string numberStr = static_cast<ostringstream*>( &(ostringstream()
+						<< number) )->str();
+			hash.append(numberStr);
+		}
+	}
+	return hash;
 }

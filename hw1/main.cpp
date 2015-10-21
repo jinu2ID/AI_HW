@@ -47,14 +47,17 @@ int main(int argc, char *argv[]) {
 	GameState myGame(startState);
 	myGame.printState();
 
-	vector<Node> solution = bfs(myGame);
+	Node n1(myGame);
+	string hash = n1.hashNode();
+	cout << hash << endl;
+/*	vector<Node> solution = bfs(myGame);
 
 	if (!solution.empty()){
 		int i;
 		for ( i = 0; i < solution.size(); i++)
 			solution[i].printNode();
 	}
-/*	// Test print function
+	// Test print function
 	cout << "Print Function Test" << endl;
 	myGame.printState();
 	cout << endl; 
@@ -461,12 +464,12 @@ void deleteNodes(vector<Node*> nodePtrs){
 */
 
 //------------------------ A* SEARCH--------------------------------//
-vector<Node> aStar(GameState startState, pointerToFunction){
+/*vector<Node> aStar(GameState startState, pointerToFunction){
 
 	// Open list
 	// Closed list
 
 	// Create node from first state
 
-}
+}*/
 

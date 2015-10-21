@@ -43,6 +43,9 @@ public:
 	GameState& operator= (const GameState &gSource);
 	friend bool operator== (const GameState &g1, const GameState &g2);
 
+	// Getters
+	vector< vector<int> > getBoard();
+
 private:
 	int width;
 	int height;
