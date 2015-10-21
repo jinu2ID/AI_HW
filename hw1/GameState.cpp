@@ -212,11 +212,18 @@ vector<Move> GameState::getAllMovesV2(){
 	vector<Move> allMoves;
 	// Iterate through every piece on the board
 	int i,j;
+	vector<int> pieces;
 	
 	for (i = 0; i < height; i++){
 		for (j = 0; j < width; j++){
 			// Get the piece's moveas
 			int x = board[i][j];
+		
+			// Check if we have already retreived moves for piece
+			if (find(pieces.begin(), pieces.end(),x) != pieces.end())
+				continue;
+			pieces.push_back(x);
+
 			vector<Move> moves = this->getMoves(x);
 			// If the piece has moves add it to our collection of all moves
 			if(moves.size() != 0){
