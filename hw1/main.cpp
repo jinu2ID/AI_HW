@@ -23,9 +23,8 @@ using namespace std;
 //FUNCTION PROTOTYPES
 vector< vector<int> > getValues(string fileName);
 vector<Node> bfs(GameState startState);
-vector<Node> dfs(GameState startState);
-vector<Node> depthLS(GameState startState, int depth);
-void deleteNodes(vector<Node*> nodePtrs);
+bool checkDuplicate(GameState state, vector<Node> nodeList);
+
 
 int main(int argc, char *argv[]) {
 
@@ -49,11 +48,10 @@ int main(int argc, char *argv[]) {
 
 	vector<Node> solution = bfs(myGame);
 
-	if (!solution.empty()){
-		int i;
-		for ( i = 0; i < solution.size(); i++)
-			solution[i].printNode();
-	}
+	int i;
+	for ( i = 0; i < solution.size(); i++)
+		solution[i].printNode();
+	
 /*	// Test print function
 	cout << "Print Function Test" << endl;
 	myGame.printState();
@@ -220,13 +218,6 @@ vector< vector<int> > getValues(string fileName){
 
 }
 
-
-
-/* _______________________________________________________________________
-  [_____________________ UNINFORMED SEARCH ALGORITHMS ____________________]
-*/
-
-//-----------------------BREADTH FIRST SEARCH-----------------------------//
 vector<Node> bfs(GameState startState){
 
 	Node graphNode(startState);
@@ -238,10 +229,8 @@ vector<Node> bfs(GameState startState){
 
 	// Vectors used a FIFO queues
 	vector<Node> openList;		// For nodes that need to be visited
-	vector<Node> closedList;	// For nodes that have already been visited
+	vector<Node> closedList;		// For nodes that have already been visited
 	
-	vector<Node*> nodePtrs;    // Keeps track of dynamically allocated Nodes
-
 	openList.push_back(graphNode);
 
 	while(!openList.empty()){
@@ -249,7 +238,6 @@ vector<Node> bfs(GameState startState){
 		// Get shallowest node in open list
 		Node* parent = new Node;
 		*parent = openList.front();
-		nodePtrs.push_back(parent);
 		openList.erase(openList.begin());
 		
 		// Add Node to closed list
@@ -262,12 +250,13 @@ vector<Node> bfs(GameState startState){
 		int i;
 		for ( i = 0; i < moves.size(); i++){
 
-			// Create child state by applying move to parent
+			// Create child state by apply move to parent
 			GameState childState = parent->getState().applyMoveCloning(moves[i]);
 			childState.normalizeState();
 
 			Node child(childState, parent, moves[i]);
 
+//			child.getParent()->getParent()->printNode();
 			// Check if Node is in open or closed lists
 			if ((find(openList.begin(), openList.end(), child) == openList.end()) and
 				 (find(closedList.begin(), closedList.end(), child) == closedList.end())){
@@ -279,194 +268,34 @@ vector<Node> bfs(GameState startState){
 					// Walk backwards and add nodes to path
 					while(true){
 						path.insert(path.begin(), *parentPtr);
+						parentPtr = parentPtr->getParent();
 						if (parentPtr->getParent() == NULL){ // At root node
+							path.insert(path.begin(), *parentPtr);
 							break;
 						}
-						parentPtr = parentPtr->getParent();
 					}
-					deleteNodes(nodePtrs);
 					return path;
 				}
 				// Add Node to open list
-				openList.push_back(child);
-			}
-		}
-	}
-	deleteNodes(nodePtrs);
-	return path;
-
-}
-
-//-------------------------------DEPTH FIRST SEARCH------------------------//
-vector<Node> dfs(GameState startState){
-
-	Node graphNode(startState);
-	vector<Node> path; // Will store path to solution if it exists
-
-	// Check if initial state is goal
-	if (startState.checkSolved())
-		return path;
-
-	// Vectors used as LIFO stack
-	vector<Node> openList;
-	vector <Node> closedList;
-
-	vector<Node*> nodePtrs;		// Keeps track of dynamically allocated nodes
-
-	openList.push_back(graphNode);
-
-	while(!openList.empty()){
-		
-		// Get node on top of stack
-		Node* parent = new Node;
-		*parent = openList.front();
-		nodePtrs.push_back(parent);
-		openList.erase(openList.begin());
-
-		// Add node to closed list
-		closedList.push_back(*parent);
-		
-		// Get all moves for state
-		vector<Move> moves = parent->getState().getAllMovesV2();
-
-		// For each move applyMoveCloning and create node
-		int i;
-		for ( i = 0; i < moves.size(); i++){
-			
-			// Create child state by applyihn move to parent
-			GameState childState = parent->getState().applyMoveCloning(moves[i]);
-			childState.normalizeState();
-
-			Node child(childState, parent, moves[i]);
-
-			// Check if node is in open or closed lists
-			if ((find(openList.begin(), openList.end(), child) == openList.end()) and
-				 (find(closedList.begin(), closedList.end(), child) == closedList.end())){
-				// Check if Node is goal state
-				if (child.checkSolved()){
-					Node* parentPtr;
-					parentPtr = &child;
-
-					// Wallk backwards and add nodes to solution path
-					while(true){
-						path.insert(path.begin(), *parentPtr);
-						if (parentPtr->getParent() == NULL){ // At root node
-							break;
-						}
-						parentPtr = parentPtr->getParent();
-					}
-					deleteNodes(nodePtrs);
-					return path;
+				else{
+					openList.push_back(child);
 				}
-				openList.insert(openList.begin(), child);
 			}
 		}
 	}
-	deleteNodes(nodePtrs);
-	return path;
-}
 
-
-//-------------------------DEPTH LIMMITED SEARCH-----------------------//
-vector<Node> depthLS(GameState startState, int depth){
-
-	Node graphNode(startState);
-	vector<Node> path; // Will store path to solution if it exists
-	int depthCounter = 0;
-
-	// Check if initial state is goal
-	if (startState.checkSolved())
-		return path;
-
-	// Vectors used as LIFO stack
-	vector<Node> openList;
-	vector <Node> closedList;
-
-	vector<Node*> nodePtrs;		// Keeps track of dynamically allocated nodes
-
-	openList.push_back(graphNode);
-
-	while(!openList.empty()){
-		
-		// Get node on top of stack
-		Node* parent = new Node;
-		*parent = openList.front();
-		nodePtrs.push_back(parent);
-		openList.erase(openList.begin());
-
-		// Add node to closed list
-		closedList.push_back(*parent);
-		
-		// Get all moves for state
-		vector<Move> moves = parent->getState().getAllMovesV2();
-
-		// For each move applyMoveCloning and create node
-		int i;
-		for ( i = 0; i < moves.size(); i++){
-			
-			// Create child state by applyihn move to parent
-			GameState childState = parent->getState().applyMoveCloning(moves[i]);
-			childState.normalizeState();
-
-			Node child(childState, parent, moves[i]);
-
-			// Check if node is in open or closed lists
-			if ((find(openList.begin(), openList.end(), child) == openList.end()) and
-				 (find(closedList.begin(), closedList.end(), child) == closedList.end())){
-				// Check if Node is goal state
-				if (child.checkSolved()){
-					Node* parentPtr;
-					parentPtr = &child;
-
-					// Wallk backwards and add nodes to solution path
-					while(true){
-						path.insert(path.begin(), *parentPtr);
-						if (parentPtr->getParent() == NULL){ // At root node
-							break;
-						}
-						parentPtr = parentPtr->getParent();
-					}
-					deleteNodes(nodePtrs);
-					return path;
-				}
-				openList.insert(openList.begin(), child);
-			}
-		}
-		if (depthCounter == depth){
-			path.clear();
-			return path;
-		}
-		depthCounter++;
-	}
-	deleteNodes(nodePtrs);
 	return path;
 
-
 }
 
-//-----------------------ITERATIVE DEEPENING SEARCH----------------//
-vector<Node> iterativeDS(GameState startState){
-
-}
-
-// Deletes dynamically allocate Nodes to free memory
-void deleteNodes(vector<Node*> nodePtrs){
+bool checkDuplicate(GameState state, vector<Node> nodeList){
+	
+	// Compare state to each node in list
 	int i;
-	for ( i = 0; i < nodePtrs.size(); i++)
-		delete nodePtrs[i];
+	for ( i = 0; i < nodeList.size(); i++){
+		GameState fromList = nodeList[i].getState();
+		if (fromList == state)
+			return true;
+	}
+	return false;
 }
-
-/*	 _________________________________________________________________
-	[____________________ INFORMED SEARCH ALGORITHMS)_________________]
-*/
-
-//------------------------ A* SEARCH--------------------------------//
-vector<Node> aStar(GameState startState, pointerToFunction){
-
-	// Open list
-	// Closed list
-
-	// Create node from first state
-
-}
-
