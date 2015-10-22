@@ -19,6 +19,7 @@ class GameState {
 
 public:
 	//Constructors
+	GameState();
 	GameState(vector< vector<int> > _matrix);
 	GameState(const GameState& obj);           //Copy constructor
 		
@@ -28,7 +29,7 @@ public:
 	vector<Move> getMoves(int piece);
 	vector <vector<Move> > getAllMoves();
 	vector<Move> getAllMovesV2();
-	bool compareState(GameState otherState);
+	bool compareState(const GameState otherState);
 
 	//Mutators
 	void changeValue(int row, int column, int newValue);
@@ -42,22 +43,21 @@ public:
 	GameState& operator= (const GameState &gSource);
 	friend bool operator== (const GameState &g1, const GameState &g2);
 
+	// Getters
+	vector< vector<int> > getBoard();
+
 private:
 	int width;
 	int height;
 	vector<vector<int> > board;	// 2D vector to hold game state
 };
 
-// Operator
+// Overloaded Operators
 
 bool operator== (const GameState &g1, const GameState &g2){
 	return g1.board == g2.board;
 }
 GameState& GameState::operator= (const GameState &gSource){
-   
-	// Check for self-assignment
-//	if (this == &gSource);
-//		return *this;
 
 	// Copy
 	width = gSource.width;

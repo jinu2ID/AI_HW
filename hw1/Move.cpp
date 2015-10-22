@@ -10,6 +10,11 @@ Move class for Sliding Brick Puzzle
 using namespace std;
 
 //Constructors
+Move::Move(){
+	piece = 0;
+	direction = '0';
+}
+
 Move::Move(int value, char _direction){
 
 	piece = value;
@@ -32,6 +37,8 @@ void Move::printMove(){
 		cout << "(" << piece << ", left)" << endl;
 	else if (direction == 'r')
 		cout << "(" << piece << ", right)" << endl;
+	else if (direction == '0')
+		cout << "Start State" << endl;
 	else
 		cout << "direction " << direction << " unrecognized" << endl;
 }
