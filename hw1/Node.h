@@ -28,6 +28,7 @@ class Node{
 		bool compareNode(const Node otherNode);
 		bool checkSolved();
 		void printNode();
+		int getFScore();
 
 		// Access
 		GameState getState();
@@ -39,11 +40,16 @@ class Node{
 		
 
 		string hashNode();
+		void setGScore();
+		void setH1Score();
+		void setFScore();
+		void setScores();
 
 	private:
 		GameState state;
 		Node *parent;
 		Move parentMove;
+		int f,g,h;
 
 
 };

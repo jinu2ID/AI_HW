@@ -58,15 +58,37 @@ int main(int argc, char *argv[]) {
 	GameState myGame(startState);
 	myGame.printState();
 
+	map<int, vector<int> > test;
 
-	vector<Node> solution = dfs(myGame);
+	test[0].push_back(0);
+//	test[0].push_back(3);
+	test[1].push_back(2);
+
+	std::vector<int>::iterator it;
+	it = find(test[0].begin(), test[0].end(), 0);
+	test[0].erase(it);
+/*	std::vector<int>::iterator it2 = find(test[0].begin(), test[0].end(), 3);
+	if (test[0].size() == 1)
+		test.erase(0);
+	else
+		test[0].erase(it2);
+*/
+	cout << test.begin()->second[0] << endl;
+
+	vector<int> test2;
+	test2.push_back(1);
+	std::vector<int>::iterator it3 = find(test2.begin(), test2.end(), 1);
+	test2.erase(it3);
+	cout << test2.size() << endl;
+
+/*	vector<Node> solution = bfs(myGame);
 
 	if (!solution.empty()){
 		int i;
 		for ( i = 0; i < solution.size(); i++)
 			solution[i].printNode();
-	}
-
+	
+	}*/
 }
 
 /* ______________________________________________________________________________
@@ -76,7 +98,7 @@ int main(int argc, char *argv[]) {
   |_____________________________________________________________________________|/
 
 
-  _____________________________________________________________________________
+   _____________________________________________________________________________
   [__________________________ HELPER FUNCTIONS__________________________________]
    
  */
@@ -162,7 +184,7 @@ vector<Node> bfs(GameState startState){
 
 	Node graphNode(startState);
 	vector<Node> path; // will store path to solution if it exists
-	
+
 	// Check if initial state is goal state
 	if (startState.checkSolved())
 		return path;
@@ -210,6 +232,7 @@ vector<Node> bfs(GameState startState){
 
 			// Create child node and key for hash map
 			Node child(childState, parent, moves[i]);
+
 			string childKey = child.hashNode();
 				
 			// Check if Node is in open or closed lists
@@ -416,12 +439,114 @@ vector<Node> iterativeDS(GameState startState){
 */
 
 //------------------------ A* SEARCH--------------------------------//
-/*vector<Node> aStar(GameState startState, pointerToFunction){
+vector<Node> aStar(GameState startState){
+	
+	Node graphNode(startState);
+	vector<Node> path; // Will store solution if it exists
 
-	// Open list
-	// Closed list
+	// Chcck if initial state is goal state
+	if (startState.checkSolved())
+		return path;
 
-	// Create node from first state
+	// Stores keys to nodes in increasing F score order
+	map<int, vector<string> > openListKeys;
 
-}*/
+	// Hash maps storing nodes to visit(openList) and nodes that have been
+	// visited(closedList)
+	map<string, Node> openList;
+	map<string, Node> closedList;
+
+	vector<Node* > nodePtrs; // Keep track of dynamically allocated nodes
+
+	// Put node on open list
+	string parentKey = graphNode.hashNode();
+	openList[parentKey] = graphNode;
+	graphNode.setScores();
+	int fScore = graphNode.getFScore();
+	openListKeys[fScore].push_back(parentKey);
+
+	// Iterate through all nodes until solution is found or leaves reached
+	while(!openListKeys.empty()){
+	
+		// Get node with lowest f score
+		Node *parent = new Node;
+		parentKey = openListKeys.begin()->second[0];
+		*parent = openList[parentKey];
+		nodePtrs.push_back(parent);
+
+		// Remove node from openListKeys and openList
+		if (openListKeys.begin()->second.size() == 1)
+			openListKeys.erase(openListKeys.begin()->first);
+		else
+			openListKeys.begin()->second.erase(openListKeys.begin()->second.begin());
+
+		// Add node to closed list
+		closedList[parentKey] = *parent;
+
+		// Check if current_node is solution
+		if (parent->checkSolved()){
+			Node* parentPtr;
+			parentPtr = parent;
+			// Walk backwards and add nodes to path
+			while(true){
+				path.insert(path.begin(), *parentPtr);
+				if (parentPtr->getParent() == NULL){
+					break;
+				}
+			}
+		}
+
+		vector<Move> moves = parent->getState().getAllMovesV2();
+
+		// for each successor_node
+		int i;
+		for (i = 0; i < moves.size(); i++)
+		{
+			// Set cost of each node to be cost of current + 1
+			// Generate each succesor_node from current_node
+			GameState childState = parent->getState().applyMoveCloning(moves[i]);
+			childState.normalizeState();
+
+			Node child(childState, parent, moves[i]);
+			child.setScores();
+			string childKey = child.hashNode();
+			child.setScores();
+			int childFScore = child.getFScore();
+			
+			// Child is in closed list discard and continue
+			if (closedList.count(childKey) > 0)
+					continue;
+
+			// Child is in open list
+			if (openList.count(childKey) > 0){
+				// Child in open list has f score better than current child
+				if (openList[childKey].getFScore() <= childFScore)
+					continue;
+				// Current old child has better f score than child in open list
+				else {
+					// Remove child in openListKeys and openList
+					int oldFScore = openList[childKey].getFScore();
+					std::vector<string>::iterator it = find(openListKeys[oldFScore].begin(),openListKeys[oldFScore].end(),childKey);
+					
+					if (openListKeys[oldFScore].size() == 1)            //[1]
+						openListKeys.erase(oldFScore);
+					else
+						openListKeys[oldFScore].erase(it);
+
+					openList.erase(childKey);
+
+					// Add new child to openListKeys and openList
+					openListKeys[childFScore].push_back(childKey);
+					openList[childKey] = child;
+				}
+			} // Child is not in open or closed list
+			else {
+				openListKeys[childFScore].push_back(childKey);
+				openList[childKey] = child;
+			}
+			// Add node_successor to open list
+		}
+		// Add node_current to closed list
+	}
+}
 

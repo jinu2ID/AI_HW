@@ -30,6 +30,7 @@ public:
 	vector <vector<Move> > getAllMoves();
 	vector<Move> getAllMovesV2();
 	bool compareState(const GameState otherState);
+	int getDistance(int piece1, int piece2);
 
 	//Mutators
 	void changeValue(int row, int column, int newValue);

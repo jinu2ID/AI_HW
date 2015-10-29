@@ -65,6 +65,11 @@ void Node::printNode(){
 	
 	parentMove.printMove();
 	state.printState();
+	cout << "F:" << f << " G:" << g << " H:" << h << endl;
+}
+
+int Node::getFScore(){
+	return f;
 }
 
 // Accessors
@@ -109,4 +114,35 @@ string Node::hashNode(){
 // of the board stay the same (even if we did have have to deal with changing 
 // dimensions we could tag the height and width to the hash to ensure 
 // that it was unique). Therefore any two game states will return the same
-// hash. 
+// hash.
+
+// Sets g(n) for node by adding +1 to the parent nodes g score
+void Node::setGScore(){
+	
+	if (parent == NULL)
+		g = 0;
+	else	
+		g = parent->g + 1;
+}
+
+// Sets h(n) for node using heuristic 1 which is Manhattan distance
+void Node::setH1Score(){
+
+	// Get average of distance between goals and pieces
+	int distance = state.getDistance(2,-1);
+
+	// Set h = avg distance
+	h = distance;
+}
+
+// f(n) = g(n) + h(n)
+void Node::setFScore(){
+	f = g + h;
+}
+
+// Set f(n), g(n), and h(n) all at once
+void Node::setScores(){
+	this->setGScore();
+	this->setH1Score();
+	this->setFScore();
+}

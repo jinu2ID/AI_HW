@@ -265,6 +265,57 @@ bool GameState::compareState(GameState otherState){  //[ NOTE 1]
 // assignment though.
 
 
+// Returns the average distance between two points
+int GameState::getDistance(int piece1, int piece2){
+
+	vector<vector<int> > piece1Pos; // Coordinates for all piece1 pieces
+	vector<vector<int> > piece2Pos; // Coordinates for all piece2 pieces
+
+	// Find all positions of piece1 and piece2
+	int i,j;
+	for (i = 0; i < board.size(); i++){
+		for (j = 0; j < board[i].size(); j++){
+			vector<int> position;
+			if (board[i][j] == piece1){
+				position.push_back(i);
+				position.push_back(j);
+				piece1Pos.push_back(position);
+			}
+			if (board[i][j] == piece2){
+				position.push_back(i);
+				position.push_back(j);
+				piece2Pos.push_back(position);
+			}
+		}	
+	}
+	
+	// If one piece is not on the board return
+	if (piece1Pos.empty() or piece2Pos.empty())
+		return 0;
+
+	// Get average distance between piece1 and piece2
+	int k, l;
+	int sum_x = 0;
+	int sum_y = 0;
+	
+	// Sum the differences between piece1 and piece2
+	for (k = 0; k < piece1Pos.size(); k++){
+		for (l = 0; l < piece2Pos.size(); l++){
+			sum_x += abs(piece1Pos[k][0] - piece2Pos[l][0]);
+			sum_y += abs(piece1Pos[k][1] - piece2Pos[l][1]);
+		}
+	}
+
+	// Get average distance
+	int diffCount = (piece1Pos.size() * piece2Pos.size()); // Total number of differences
+	int distance_x = (sum_x/diffCount);
+	int distance_y = (sum_y/diffCount);
+
+	int distance = distance_x + distance_y;
+
+	return distance;
+}
+
 //Mutators
 void GameState::changeValue(int row, int column, int newValue){
 	board[row][column] = newValue;
