@@ -29,6 +29,7 @@ vector< vector<int> > getValues(string fileName);
 vector<Node> bfs(GameState startState);
 vector<Node> dfs(GameState startState);
 vector<Node> depthLS(GameState startState, int depth);
+vector<Node> aStar(GameState startState);
 void deleteNodes(vector<Node*> nodePtrs);
    
 /* ______________________________________________________
@@ -58,37 +59,14 @@ int main(int argc, char *argv[]) {
 	GameState myGame(startState);
 	myGame.printState();
 
-	map<int, vector<int> > test;
-
-	test[0].push_back(0);
-//	test[0].push_back(3);
-	test[1].push_back(2);
-
-	std::vector<int>::iterator it;
-	it = find(test[0].begin(), test[0].end(), 0);
-	test[0].erase(it);
-/*	std::vector<int>::iterator it2 = find(test[0].begin(), test[0].end(), 3);
-	if (test[0].size() == 1)
-		test.erase(0);
-	else
-		test[0].erase(it2);
-*/
-	cout << test.begin()->second[0] << endl;
-
-	vector<int> test2;
-	test2.push_back(1);
-	std::vector<int>::iterator it3 = find(test2.begin(), test2.end(), 1);
-	test2.erase(it3);
-	cout << test2.size() << endl;
-
-/*	vector<Node> solution = bfs(myGame);
+	vector<Node> solution = aStar(myGame);
 
 	if (!solution.empty()){
 		int i;
 		for ( i = 0; i < solution.size(); i++)
 			solution[i].printNode();
 	
-	}*/
+	}
 }
 
 /* ______________________________________________________________________________
@@ -467,7 +445,7 @@ vector<Node> aStar(GameState startState){
 
 	// Iterate through all nodes until solution is found or leaves reached
 	while(!openListKeys.empty()){
-	
+		cout << "HERE" << endl;	
 		// Get node with lowest f score
 		Node *parent = new Node;
 		parentKey = openListKeys.begin()->second[0];
@@ -483,7 +461,7 @@ vector<Node> aStar(GameState startState){
 		// Add node to closed list
 		closedList[parentKey] = *parent;
 
-		// Check if current_node is solution
+		// Check if current node is solution
 		if (parent->checkSolved()){
 			Node* parentPtr;
 			parentPtr = parent;
@@ -493,7 +471,10 @@ vector<Node> aStar(GameState startState){
 				if (parentPtr->getParent() == NULL){
 					break;
 				}
+				parentPtr = parentPtr->getParent();
 			}
+			deleteNodes(nodePtrs);	// Free memory
+			return path;				// return solution path
 		}
 
 		vector<Move> moves = parent->getState().getAllMovesV2();
@@ -502,6 +483,7 @@ vector<Node> aStar(GameState startState){
 		int i;
 		for (i = 0; i < moves.size(); i++)
 		{
+			cout << "HERE2" << endl;
 			// Set cost of each node to be cost of current + 1
 			// Generate each succesor_node from current_node
 			GameState childState = parent->getState().applyMoveCloning(moves[i]);
@@ -540,13 +522,15 @@ vector<Node> aStar(GameState startState){
 					openList[childKey] = child;
 				}
 			} // Child is not in open or closed list
-			else {
+			else { // Add child to open list
 				openListKeys[childFScore].push_back(childKey);
 				openList[childKey] = child;
 			}
-			// Add node_successor to open list
+
 		}
-		// Add node_current to closed list
 	}
+	// No solution found
+	deleteNodes(nodePtrs);	// Free memory
+	return path;				// Return empty path
 }
 
