@@ -10,7 +10,7 @@ Main program to test GameState class
 #include <string>
 #include <algorithm>
 #include <vector>
-#include <list>
+#include <map>
 #include "GameState.h"
 #include "GameState.cpp"
 #include "Move.h"
@@ -20,10 +20,23 @@ Main program to test GameState class
 
 using namespace std;
 
-//FUNCTION PROTOTYPES
+/* _____________________________________________________	
+[]                   FUNCTION PROTOTYPES               /
+[] ____________________________________________________\
+[]
+*/
 vector< vector<int> > getValues(string fileName);
 vector<Node> bfs(GameState startState);
-bool checkDuplicate(GameState state, vector<Node> nodeList);
+vector<Node> dfs(GameState startState);
+vector<Node> depthLS(GameState startState, int depth);
+void deleteNodes(vector<Node*> nodePtrs);
+   
+/* ______________________________________________________
+  /_____________________________________________________/\
+  |                                                     //
+  |               MAIN METHOD                           \\
+  |_____________________________________________________//                 
+*/
 
 
 int main(int argc, char *argv[]) {
@@ -46,114 +59,29 @@ int main(int argc, char *argv[]) {
 	GameState myGame(startState);
 	myGame.printState();
 
-	vector<Node> solution = bfs(myGame);
 
-	int i;
-	for ( i = 0; i < solution.size(); i++)
-		solution[i].printNode();
-	
-/*	// Test print function
-	cout << "Print Function Test" << endl;
-	myGame.printState();
-	cout << endl; 
+	vector<Node> solution = dfs(myGame);
 
-	// Test copy function
-	cout << "Copy Function Test" << endl;
-	GameState yourGame(myGame);
-
-	yourGame.changeValue(0,0,100);
-
-	cout << "Changed Copy" << endl;
-	yourGame.printState();
-	cout << "Original Unchanged" << endl;
-	myGame.printState();
-	cout << endl;
-
-	// Test puzzle solved function
-	cout << "Puzzle Solved Function Test" << endl;
-	if (myGame.checkSolved())
-		cout << "Solved!" << endl;
-	else
-		cout << "Not solved!" << endl;
-	cout << endl;
-
-	// Test showing piece's moves
-	cout << "Get Piece's Moves Function Test" << endl << "Enter piece" <<
-		endl;
-	int piece;
-	cin >> piece;
-	vector<Move> moves = myGame.getMoves(piece);
-
-	if (moves.size() == 0)
-		cout << "No moves" << endl;
-	else {
+	if (!solution.empty()){
 		int i;
-		for (i = 0; i < moves.size(); i++){
-			moves[i].printMove();
-		}
+		for ( i = 0; i < solution.size(); i++)
+			solution[i].printNode();
 	}
-	cout << endl;
 
-	// Test get all moves
-	cout << "Get All Moves for State Function Test" << endl;
-	vector <vector<Move> > allMoves = myGame.getAllMoves();
-	int i, j;
-	for (i = 0; i < allMoves.size(); i++){
-		for (j = 0; j < allMoves[i].size(); j ++){
-			allMoves[i][j].printMove();
-
-		}
-	}
-	cout << endl;
-
-	// Test applyMove function
-	cout << "Apply Move Function Test" << endl << "Enter piece" << endl;
-	cin >> piece;
-	cout << "Enter direction: u d l r" << endl;
-	char dir;
-	cin >> dir;
-	Move newMove(piece, dir);
-	myGame.applyMove(newMove);
-	myGame.printState();
-	cout << endl;
-
-	// Test applyMoveCloning function
-	cout << "Apply Move Cloning Test" << endl << "Enter piece" << endl;
-	cin >> piece;
-	cout << "Enter direction: u d l r" << endl;
-	cin >> dir;
-	Move newerMove(piece, dir);
-	GameState cloneState = myGame.applyMoveCloning(newerMove);
-	cloneState.printState();
-	cout << endl;
-
-	// Test compareState function
-	cout << "Compare States Function Test" << endl;
-	bool same = myGame.compareState(cloneState);
-	cout << "Comparing to previously changed clone state" << endl;
-	cout << ( same ? "Same" : "Not Same") << endl;
-	GameState copyState(myGame);
-	same = myGame.compareState(copyState);
-	cout << "Comparing to a copy of original game state" << endl;
-	cout << ( same ? "Same" : "Not Same") << endl;
-	cout << endl;
-
-	// Test normalizeState function
-	cout << "Normalize State Function Test" << endl;
-	myGame.normalizeState();
-	myGame.printState();
-	cout << endl;
-
-	// Test randWalk function
-	cout << "Random Walk Function Test" << endl << "Enter a number" << endl;
-	int n;
-	cin >> n;
-	myGame.randomWalk(n);
-*/
 }
 
+/* ______________________________________________________________________________
+  /_____________________________________________________________________________/|
+  |/////////////////////////////////////////////////////////////////////////////||
+  |/////////////////				FUNCTION DEFINITIONS           ///////////////////||
+  |_____________________________________________________________________________|/
 
-//FUNCTION DEFINITIONS
+
+  _____________________________________________________________________________
+  [__________________________ HELPER FUNCTIONS__________________________________]
+   
+ */
+
 // Reads values from a file and converts them to a 2D vector
 vector< vector<int> > getValues(string fileName){
  
@@ -218,6 +146,19 @@ vector< vector<int> > getValues(string fileName){
 
 }
 
+// Deletes dynamically allocated Nodes to free memory
+// Used in Search alogorithms
+void deleteNodes(vector<Node*> nodePtrs){
+	int i;
+	for ( i = 0; i < nodePtrs.size(); i++)
+		delete nodePtrs[i];
+}
+
+/* _______________________________________________________________________
+  [_____________________ UNINFORMED SEARCH ALGORITHMS ____________________]
+*/
+
+//-----------------------BREADTH FIRST SEARCH-----------------------------//
 vector<Node> bfs(GameState startState){
 
 	Node graphNode(startState);
@@ -227,21 +168,36 @@ vector<Node> bfs(GameState startState){
 	if (startState.checkSolved())
 		return path;
 
-	// Vectors used a FIFO queues
-	vector<Node> openList;		// For nodes that need to be visited
-	vector<Node> closedList;		// For nodes that have already been visited
-	
-	openList.push_back(graphNode);
+	// FIFO queue that stores keys to nodes in breadth first order 
+	vector<string> openListKeys;
 
-	while(!openList.empty()){
+	// Hash maps storing nodes to visit(openList) and nodes that have been visited(closedList)
+	map<string, Node> openList;
+	map<string, Node> closedList;
+
+
+	vector<Node*> nodePtrs;    // Keeps track of dynamically allocated Nodes
+	
+	// Put first node in openList
+	string parentKey = graphNode.hashNode();
+	openList[parentKey] = graphNode;
+	openListKeys.push_back(parentKey); // Add key to open list queue
+
+	// Iterate through all nodes until solution is found or reeach all leaves
+	while(!openListKeys.empty()){
 
 		// Get shallowest node in open list
 		Node* parent = new Node;
-		*parent = openList.front();
-		openList.erase(openList.begin());
+		parentKey = openListKeys.front();
+		*parent = openList[parentKey];
+		nodePtrs.push_back(parent);
+		
+		// Remove node from open lists
+		openList.erase(parentKey);
+		openListKeys.erase(openListKeys.begin());
 		
 		// Add Node to closed list
-		closedList.push_back(*parent);
+		closedList[parentKey] = *parent;
 
 		// Get all moves for state
 		vector<Move> moves = parent->getState().getAllMovesV2();
@@ -254,12 +210,12 @@ vector<Node> bfs(GameState startState){
 			GameState childState = parent->getState().applyMoveCloning(moves[i]);
 			childState.normalizeState();
 
+			// Create child node and key for hash map
 			Node child(childState, parent, moves[i]);
-
-//			child.getParent()->getParent()->printNode();
+			string childKey = child.hashNode();
+				
 			// Check if Node is in open or closed lists
-			if ((find(openList.begin(), openList.end(), child) == openList.end()) and
-				 (find(closedList.begin(), closedList.end(), child) == closedList.end())){
+			if ((openList.count(childKey) == 0) and (closedList.count(childKey) == 0)){
 					
 				// Check if Node has goal state
 				if (child.checkSolved()){
@@ -274,28 +230,123 @@ vector<Node> bfs(GameState startState){
 							break;
 						}
 					}
-					return path;
+					deleteNodes(nodePtrs); // Free memory
+					return path;           // Return solution path
 				}
-				// Add Node to open list
-				else{
-					openList.push_back(child);
-				}
+				// Node is not goal; add it to the back of the open list
+				openListKeys.push_back(childKey);
+				openList[childKey] = child;
 			}
 		}
 	}
+	// No solution found
+	deleteNodes(nodePtrs);   // Free memory
+	return path;				 // Return empty path
+
+}
+
+//-------------------------------DEPTH FIRST SEARCH------------------------//
+vector<Node> dfs(GameState startState){
+
+	Node graphNode(startState);
+	vector<Node> path; // Will store path to solution if it exists
+
+	// Check if initial state is goal
+	if (startState.checkSolved())
+		return path;
+
+	// LIFO stack that stores keys to nodes in a depth first order
+	vector<string> openListKeys;
+
+	// Hash maps storing nodes to visit(openList) and nodes that have been
+	// visited(closedList)
+	map<string, Node> openList;
+	map<string, Node> closedList;
+
+	vector<Node*> nodePtrs;		// Keeps track of dynamically allocated nodes
+	
+	// Put first node in open list
+	string parentKey = graphNode.hashNode();
+	openList[parentKey] = graphNode;
+	openListKeys.push_back(parentKey);
+
+	while(!openList.empty()){
+		
+		// Get node on top of stack
+		Node* parent = new Node;
+		parentKey = openListKeys.front();
+		*parent = openList[parentKey];
+		nodePtrs.push_back(parent);
+
+		// Remove node from open lists
+		openList.erase(parentKey);
+		openListKeys.erase(openListKeys.begin());
+
+		// Add node to closed list
+		closedList[parentKey] = *parent;
+		
+		// Get all moves for state
+		vector<Move> moves = parent->getState().getAllMovesV2();
+
+		// For each move applyMoveCloning and create node
+		int i;
+		for ( i = 0; i < moves.size(); i++){
+			
+			// Create child state by applyihn move to parent
+			GameState childState = parent->getState().applyMoveCloning(moves[i]);
+			childState.normalizeState();
+
+			// Create child node and key for hash map
+			Node child(childState, parent, moves[i]);
+			string childKey = child.hashNode();
+
+			// Check if node is in open or closed lists
+			if ((openList.count(childKey) == 0) and (closedList.count(childKey) == 0 )){
+
+				// Check if Node is goal state
+				if (child.checkSolved()){
+					Node* parentPtr;
+					parentPtr = &child;
+
+					// Wallk backwards and add nodes to solution path
+					while(true){
+						path.insert(path.begin(), *parentPtr);
+						if (parentPtr->getParent() == NULL){ // At root node
+							break;
+						}
+						parentPtr = parentPtr->getParent();
+					}
+					deleteNodes(nodePtrs);		// Free memory
+					return path;				   // Return solution path
+				}
+				// Node is not goal; add it to the top of the open list
+				openListKeys.insert(openListKeys.begin(), childKey);
+				openList[childKey] = child;
+			}
+		}
+	}
+	// No solution found
+	deleteNodes(nodePtrs); 			// Free memory      
+	return path;						// Return empty path
+}
 
 	return path;
 
 }
 
-bool checkDuplicate(GameState state, vector<Node> nodeList){
-	
-	// Compare state to each node in list
-	int i;
-	for ( i = 0; i < nodeList.size(); i++){
-		GameState fromList = nodeList[i].getState();
-		if (fromList == state)
-			return true;
-	}
-	return false;
-}
+
+/*	 _________________________________________________________________
+	[____________________ INFORMED SEARCH ALGORITHMS)_________________]
+*/
+
+//------------------------ A* SEARCH--------------------------------//
+/*vector<Node> aStar(GameState startState, pointerToFunction){
+
+	// Open list
+	// Closed list
+
+	// Create node from first state
+
+}*/
+
+
