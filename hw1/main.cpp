@@ -11,6 +11,8 @@ Main program to test GameState class
 #include <algorithm>
 #include <vector>
 #include <map>
+#include <time.h>
+#include <math.h>
 #include "GameState.h"
 #include "GameState.cpp"
 #include "Move.h"
@@ -58,8 +60,13 @@ int main(int argc, char *argv[]) {
  
 	GameState myGame(startState);
 	myGame.printState();
-
+	cout << endl;
+	
+	clock_t t;
+	t = clock();
 	vector<Node> solution = aStar(myGame);
+	t = clock() - t;
+	float time = ((float)t)/CLOCKS_PER_SEC;
 
 	if (!solution.empty()){
 		int i;
@@ -70,6 +77,9 @@ int main(int argc, char *argv[]) {
 				solution[i].printNode();
 		}
 	}
+
+	cout << "Time: " << time << " seconds" << endl;
+	cout << "Solution length: " << solution.size() << endl;
 }
 
 /* ______________________________________________________________________________
@@ -455,10 +465,6 @@ vector<Node> aStar(GameState startState){
 		*parent = openList[parentKey];
 		nodePtrs.push_back(parent);
 
-	//	cout << "Parent" << endl;
-	//	parent->printNode();
-	//	cout << endl;
-
 		// Remove node from openListKeys and openList
 		if (openListKeys.begin()->second.size() == 1)						//[1]
 			openListKeys.erase(openListKeys.begin()->first);
@@ -481,6 +487,7 @@ vector<Node> aStar(GameState startState){
 				}
 				parentPtr = parentPtr->getParent();
 			}
+			cout << "Nodes explored: " << closedList.size() << endl;
 			deleteNodes(nodePtrs);	// Free memory
 			return path;				// return solution path
 		}
@@ -491,7 +498,6 @@ vector<Node> aStar(GameState startState){
 		int i;
 		for (i = 0; i < moves.size(); i++)
 		{
-	//		cout << "HERE2" << endl;
 			// Set cost of each node to be cost of current + 1
 			// Generate each succesor_node from current_node
 			GameState childState = parent->getState().applyMoveCloning(moves[i]);
@@ -502,11 +508,7 @@ vector<Node> aStar(GameState startState){
 			string childKey = child.hashNode();
 			child.setScores();
 			int childFScore = child.getFScore();
-
-	//		cout << "Child" << endl;
-	//		child.printNode();
-	//		cout << endl;
-			
+	
 			// Child is in closed list discard and continue
 			if (closedList.count(childKey) > 0)
 					continue;
