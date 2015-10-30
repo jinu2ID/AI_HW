@@ -22,13 +22,15 @@ class Node{
 		Node(GameState _state);
 		Node(GameState _state, Node *_parent);
 		Node(GameState _state, Node *_parent, Move _parentMove);
-		Node(const Node & nSource);
+		Node(GameState _state, Node *_parent, Move _parentMove, int _g);
+		Node(const Node & nSource);    // Copy Constructor
 
 		// Inspectors
 		bool compareNode(const Node otherNode);
 		bool checkSolved();
 		void printNode();
 		int getFScore();
+		int getGScore();
 
 		// Access
 		GameState getState();
@@ -62,6 +64,9 @@ Node& Node::operator= (const Node &nSource){
 	state = nSource.state;
 	parent = nSource.parent;
 	parentMove = nSource.parentMove;
+	f = nSource.f;
+	g = nSource.g;
+	h = nSource.h;
 }
 
 #endif

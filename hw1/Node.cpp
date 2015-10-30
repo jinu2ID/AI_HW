@@ -19,6 +19,7 @@ Node::Node(){
 	state = GameState();
 	parent = NULL;
 	parentMove = Move();
+	g = 0;
 }
 
 Node::Node(GameState _state){
@@ -26,6 +27,7 @@ Node::Node(GameState _state){
 	state = _state;
 	parent = NULL;
 	parentMove = Move();
+	g = 0;
 }
 
 Node::Node(GameState _state, Node *_parent){
@@ -33,6 +35,7 @@ Node::Node(GameState _state, Node *_parent){
 	state = _state;
 	parent = _parent;
 	parentMove = Move();
+	g = 0;
 }
 
 Node::Node(GameState _state, Node *_parent, Move _parentMove){
@@ -40,6 +43,15 @@ Node::Node(GameState _state, Node *_parent, Move _parentMove){
 	state = _state;
 	parent = _parent;
 	parentMove = _parentMove;
+	g = 0;
+}
+
+Node::Node(GameState _state, Node *_parent, Move _parentMove, int _g){
+	
+	state = _state;
+	parent = _parent;
+	parentMove = _parentMove;
+	g = _g;
 }
 
 // Copy Constructor
@@ -47,6 +59,9 @@ Node::Node(const Node &nSource){
 	state = nSource.state;
 	parent = nSource.parent;
 	parentMove = nSource.parentMove;
+	f = nSource.f;
+	g = nSource.g;
+	h = nSource.h;
 }
 
 // Inspectors
@@ -72,6 +87,9 @@ int Node::getFScore(){
 	return f;
 }
 
+int Node::getGScore(){
+	return g;
+}
 // Accessors
 GameState Node::getState(){
 	return state;
@@ -142,7 +160,6 @@ void Node::setFScore(){
 
 // Set f(n), g(n), and h(n) all at once
 void Node::setScores(){
-	this->setGScore();
 	this->setH1Score();
 	this->setFScore();
 }

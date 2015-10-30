@@ -445,17 +445,16 @@ vector<Node> aStar(GameState startState){
 
 	// Iterate through all nodes until solution is found or leaves reached
 	while(!openListKeys.empty()){
-		cout << "HERE" << endl;	
+	//	cout << "HERE" << endl;	
 		// Get node with lowest f score
 		Node *parent = new Node;
 		parentKey = openListKeys.begin()->second[0];
 		*parent = openList[parentKey];
 		nodePtrs.push_back(parent);
-		parent->setScores();
 
-		cout << "Parent" << endl;
-		parent->printNode();
-		cout << endl;
+	//	cout << "Parent" << endl;
+	//	parent->printNode();
+	//	cout << endl;
 
 		// Remove node from openListKeys and openList
 		if (openListKeys.begin()->second.size() == 1)						//[1]
@@ -489,21 +488,21 @@ vector<Node> aStar(GameState startState){
 		int i;
 		for (i = 0; i < moves.size(); i++)
 		{
-			cout << "HERE2" << endl;
+	//		cout << "HERE2" << endl;
 			// Set cost of each node to be cost of current + 1
 			// Generate each succesor_node from current_node
 			GameState childState = parent->getState().applyMoveCloning(moves[i]);
 			childState.normalizeState();
 
-			Node child(childState, parent, moves[i]);
+			Node child(childState, parent, moves[i], (parent->getGScore()+1));
 			child.setScores();
 			string childKey = child.hashNode();
 			child.setScores();
 			int childFScore = child.getFScore();
 
-			cout << "Child" << endl;
-			child.printNode();
-			cout << endl;
+	//		cout << "Child" << endl;
+	//		child.printNode();
+	//		cout << endl;
 			
 			// Child is in closed list discard and continue
 			if (closedList.count(childKey) > 0)
