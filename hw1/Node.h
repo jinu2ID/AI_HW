@@ -29,6 +29,7 @@ class Node{
 		bool compareNode(const Node otherNode);
 		bool checkSolved();
 		void printNode();
+		void printMove();
 		int getFScore();
 		int getGScore();
 

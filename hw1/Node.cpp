@@ -83,6 +83,9 @@ void Node::printNode(){
 	cout << "F:" << f << " G:" << g << " H:" << h << endl;
 }
 
+void Node::printMove(){
+	parentMove.printMove();
+}
 int Node::getFScore(){
 	return f;
 }

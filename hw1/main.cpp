@@ -63,9 +63,12 @@ int main(int argc, char *argv[]) {
 
 	if (!solution.empty()){
 		int i;
-		for ( i = 0; i < solution.size(); i++)
-			solution[i].printNode();
-	
+		for ( i = 0; i < solution.size(); i++){
+			solution[i].printMove();
+
+			if (i == solution.size() -1)
+				solution[i].printNode();
+		}
 	}
 }
 
@@ -542,4 +545,12 @@ vector<Node> aStar(GameState startState){
 	deleteNodes(nodePtrs);	// Free memory
 	return path;				// Return empty path
 }
+
+//[1]: For my open list that is ranked by F score I use a C++ map with an
+//integer F score as the key and a vector of Nodes as the value. C++ map
+//stores items in order by keys. I use a vector as the value so that
+//multiple Nodes with the same F score can be stored. When removing Nodes
+//from the open list I have to check if the Node is the last element in the
+//vector. If it is I have to delete the vector by using its corresponding
+//key. Otherwise A* might try to pull a Node from an empty vector. 
 
