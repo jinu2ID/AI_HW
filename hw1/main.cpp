@@ -451,12 +451,18 @@ vector<Node> aStar(GameState startState){
 		parentKey = openListKeys.begin()->second[0];
 		*parent = openList[parentKey];
 		nodePtrs.push_back(parent);
+		parent->setScores();
+
+		cout << "Parent" << endl;
+		parent->printNode();
+		cout << endl;
 
 		// Remove node from openListKeys and openList
-		if (openListKeys.begin()->second.size() == 1)
+		if (openListKeys.begin()->second.size() == 1)						//[1]
 			openListKeys.erase(openListKeys.begin()->first);
 		else
 			openListKeys.begin()->second.erase(openListKeys.begin()->second.begin());
+		openList.erase(parentKey);
 
 		// Add node to closed list
 		closedList[parentKey] = *parent;
@@ -494,13 +500,17 @@ vector<Node> aStar(GameState startState){
 			string childKey = child.hashNode();
 			child.setScores();
 			int childFScore = child.getFScore();
+
+			cout << "Child" << endl;
+			child.printNode();
+			cout << endl;
 			
 			// Child is in closed list discard and continue
 			if (closedList.count(childKey) > 0)
 					continue;
 
 			// Child is in open list
-			if (openList.count(childKey) > 0){
+			if (openList.count(childKey) > 0){	
 				// Child in open list has f score better than current child
 				if (openList[childKey].getFScore() <= childFScore)
 					continue;
@@ -516,7 +526,7 @@ vector<Node> aStar(GameState startState){
 						openListKeys[oldFScore].erase(it);
 
 					openList.erase(childKey);
-
+					
 					// Add new child to openListKeys and openList
 					openListKeys[childFScore].push_back(childKey);
 					openList[childKey] = child;
