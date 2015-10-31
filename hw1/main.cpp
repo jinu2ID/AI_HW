@@ -74,22 +74,22 @@ int main(int argc, char *argv[]) {
 
 	clock_t t;
 	t = clock();
+
 	vector<Node> solution = aStar(myGame, h_mode);
+
 	t = clock() - t;
 	float time = ((float)t)/CLOCKS_PER_SEC;
 
 	if (!solution.empty()){
 		int i;
-		for ( i = 0; i < solution.size(); i++){
-			solution[i].printMove();
-
-			if (i == solution.size() -1)
-				solution[i].printNode();
-		}
+		for ( i = 0; i < solution.size(); i++)
+			solution[i].printNode();
+	
 	}
 
 	cout << "Time: " << time << " seconds" << endl;
 	cout << "Solution length: " << solution.size() << endl;
+
 }
 
 /* ______________________________________________________________________________
@@ -577,3 +577,8 @@ void deleteNodes(vector<Node*> nodePtrs){
 		delete nodePtrs[i];
 }
 
+
+//[1]: For my open list that is ranked by F score I use a C++ map with an
+//integer F score as the key and a vector of Nodes as the value. C++ map
+//stores items in order by key value.
+//Here I check if the vector has one element before deleting it. This is due to the wat a C++ map works.
