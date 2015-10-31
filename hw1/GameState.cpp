@@ -316,6 +316,39 @@ int GameState::getDistance(int piece1, int piece2){
 	return distance;
 }
 
+// Returns number of pieces between two other pieces
+int GameState::getBlocked(int piece1, int piece2){
+
+	int i,j,p1r,p1c,p2r,p2c;
+
+	for (i = 0; i < board.size(); i++){
+		for (j = 0; j < board.size(); j++){
+			if (board[i][j] == piece1){
+				p1r = i;
+				p1c = j;
+			}
+			if (board[i][j] == piece2){
+				p2r = i;
+				p2c = j;
+			}
+		}
+	}
+
+	int k,l;
+	vector<int> blockers;
+	
+	for (k = p1r+1; k < p2r; k++){
+		for (l = 0; l < board[k].size(); l++){
+			if ((board[k][l] != 1) and (board[k][l] != 0)){
+				if (find(blockers.begin() ,blockers.end(), board[k][l]) == blockers.end())
+					blockers.push_back(board[k][l]);
+			}
+		}
+	}
+
+	return blockers.size();
+}
+
 //Mutators
 void GameState::changeValue(int row, int column, int newValue){
 	board[row][column] = newValue;

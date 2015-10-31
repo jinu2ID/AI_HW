@@ -156,13 +156,29 @@ void Node::setH1Score(){
 	h = distance;
 }
 
+// Adds number of blocker to Manhattan distance
+void Node::setH2Score(){
+
+	// Get distance between goals and pieces and number of blockers
+	int distance = state.getDistance(2,-1);
+	int blockers = state.getBlocked(2,-1);
+
+	h = distance + blockers;
+}
+
 // f(n) = g(n) + h(n)
 void Node::setFScore(){
 	f = g + h;
 }
 
-// Set f(n), g(n), and h(n) all at once
+// Set f(n) and h(n)
 void Node::setScores(){
 	this->setH1Score();
+	this->setFScore();
+}
+
+// Set scores using H2 heuristic
+void Node::setScoresH2(){
+	this->setH2Score();
 	this->setFScore();
 }

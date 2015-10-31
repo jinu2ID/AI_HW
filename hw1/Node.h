@@ -45,8 +45,10 @@ class Node{
 		string hashNode();
 		void setGScore();
 		void setH1Score();
+		void setH2Score();
 		void setFScore();
 		void setScores();
+		void setScoresH2();
 
 	private:
 		GameState state;

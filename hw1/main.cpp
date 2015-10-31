@@ -31,7 +31,7 @@ vector< vector<int> > getValues(string fileName);
 vector<Node> bfs(GameState startState);
 vector<Node> dfs(GameState startState);
 vector<Node> depthLS(GameState startState, int depth);
-vector<Node> aStar(GameState startState);
+vector<Node> aStar(GameState startState, bool h_mode);
 void deleteNodes(vector<Node*> nodePtrs);
    
 /* ______________________________________________________
@@ -55,16 +55,26 @@ int main(int argc, char *argv[]) {
 	} else {
 		file = argv[1];
 	}
+	
+	bool h_mode;
+
+	// Get heuristic mode
+	if (argc < 3)
+		h_mode = false; // default
+	else if (strcmp(argv[2],"-h") == 0)
+		h_mode = true;
+	else
+		h_mode = false;	
 
 	vector< vector<int> > startState = getValues(file);
  
 	GameState myGame(startState);
 	myGame.printState();
 	cout << endl;
-	
+
 	clock_t t;
 	t = clock();
-	vector<Node> solution = aStar(myGame);
+	vector<Node> solution = aStar(myGame, h_mode);
 	t = clock() - t;
 	float time = ((float)t)/CLOCKS_PER_SEC;
 
@@ -87,84 +97,149 @@ int main(int argc, char *argv[]) {
   |/////////////////////////////////////////////////////////////////////////////||
   |/////////////////				FUNCTION DEFINITIONS           ///////////////////||
   |_____________________________________________________________________________|/
+*/
 
+/*	 _________________________________________________________________
+	[____________________ INFORMED SEARCH ALGORITHMS)_________________]
+*/
 
-   _____________________________________________________________________________
-  [__________________________ HELPER FUNCTIONS__________________________________]
-   
- */
+//------------------------ A* SEARCH--------------------------------//
+vector<Node> aStar(GameState startState, bool h_mode){
 
-// Reads values from a file and converts them to a 2D vector
-vector< vector<int> > getValues(string fileName){
- 
-        // Open file
+	startState.normalizeState();	
+	Node graphNode(startState);
+	vector<Node> path; // Will store solution if it exists
 
-        ifstream fin;
-        fin.open(fileName.c_str());
+	// Check if initial state is goal state
+	if (startState.checkSolved())
+		return path;
 
-        if (!fin){
-                cout << "Error opening " << fileName << endl;
-                exit (EXIT_FAILURE);
-        }
+	// Stores keys to nodes in increasing F score order
+	map<int, vector<string> > openListKeys;
 
-		  // Read in line from file
+	// Hash maps storing nodes to visit(openList) and nodes that have been
+	// visited(closedList)
+	map<string, Node> openList;
+	map<string, Node> closedList;
 
-		  // First two values are width and height
-        string line;       
-        getline(fin, line);
-			
-		  // Check that strlen is 4
-		  if(line.length() != 4){
-			  cout << "Incorrect format for height and width" << endl;
-			  exit (EXIT_FAILURE);
-		  }
+	vector<Node* > nodePtrs; // Keep track of dynamically allocated nodes
 
-		  // Convert height to int
-		  char number = line[2];
-		  char* convert = new char[2];
-		  strcpy(convert, &number);
-		  char *endptr;
-		  
-		  int height = (int)strtol(convert, &endptr, 10);
+	// Put node on open list
+	string parentKey = graphNode.hashNode();
+	openList[parentKey] = graphNode;
+	// Select heuristic
+	if (h_mode)
+		graphNode.setScoresH2();
+	else
+		graphNode.setScores();
 
-		  // Extract rows from file
-		  int i;
-		  string value;
-		  vector<int> values;
-		  vector< vector<int> > matrix;
+	int fScore = graphNode.getFScore();
+	openListKeys[fScore].push_back(parentKey);
 
-		  // Iterate through rows		  
-		  for(i = 0;i < height;i++){
-			  getline(fin, line);
-			  stringstream lineStream(line);
-			  
-			  // Extract numbers from rows
-			  while(getline(lineStream, value, ','))
-			  {
-				  convert = new char[value.length() + 1];
-				  strcpy(convert, value.c_str());
-				  int int_value = (int)strtol(convert, &endptr, 10);
-				  values.push_back(int_value);
-			  }
-			  
-			  // Add row to matrix
-			  matrix.push_back(values);
-			  values.clear();
+	// Iterate through all nodes until solution is found or leaves reached
+	while(!openListKeys.empty()){
+		// Get node with lowest f score
+		Node *parent = new Node;
+		parentKey = openListKeys.begin()->second[0];
+		*parent = openList[parentKey];
+		nodePtrs.push_back(parent);
 
-		  }
+		// Remove node from openListKeys and openList
+		if (openListKeys.begin()->second.size() == 1)						//[1]
+			openListKeys.erase(openListKeys.begin()->first);
+		else
+			openListKeys.begin()->second.erase(openListKeys.begin()->second.begin());
+		openList.erase(parentKey);
 
-		  fin.close();
-		  return matrix;
+		// Add node to closed list
+		closedList[parentKey] = *parent;
 
+		// Check if current node is solution
+		if (parent->checkSolved()){
+			Node* parentPtr;
+			parentPtr = parent;
+			// Walk backwards and add nodes to path
+			while(true){
+				path.insert(path.begin(), *parentPtr);
+				if (parentPtr->getParent() == NULL){
+					break;
+				}
+				parentPtr = parentPtr->getParent();
+			}
+			cout << "Nodes explored: " << closedList.size() << endl;
+			deleteNodes(nodePtrs);	// Free memory
+			return path;				// return solution path
+		}
+
+		vector<Move> moves = parent->getState().getAllMovesV2();
+
+		// for each successor_node
+		int i;
+		for (i = 0; i < moves.size(); i++)
+		{
+			// Set cost of each node to be cost of parent + 1
+			// Generate each succesor from parent
+			GameState childState = parent->getState().applyMoveCloning(moves[i]);
+			childState.normalizeState();
+
+			Node child(childState, parent, moves[i], (parent->getGScore()+1));
+			child.setScores();
+			string childKey = child.hashNode();
+			// Select heuristic
+			if (h_mode)
+				child.setScoresH2();
+			else
+				child.setScores();
+			int childFScore = child.getFScore();
+	
+			// Child is in closed list discard and continue
+			if (closedList.count(childKey) > 0)
+					continue;
+
+			// Child is in open list
+			if (openList.count(childKey) > 0){	
+				// Child in open list has f score better than current child
+				if (openList[childKey].getFScore() <= childFScore)
+					continue;
+				// Current old child has better f score than child in open list
+				else {
+					// Remove child in openListKeys and openList
+					int oldFScore = openList[childKey].getFScore();
+					std::vector<string>::iterator it = find(openListKeys[oldFScore].begin(),openListKeys[oldFScore].end(),childKey);
+					
+					if (openListKeys[oldFScore].size() == 1)            //[1]
+						openListKeys.erase(oldFScore);
+					else
+						openListKeys[oldFScore].erase(it);
+
+					openList.erase(childKey);
+					
+					// Add new child to openListKeys and openList
+					openListKeys[childFScore].push_back(childKey);
+					openList[childKey] = child;
+				}
+			} // Child is not in open or closed list
+			else { // Add child to open list
+				openListKeys[childFScore].push_back(childKey);
+				openList[childKey] = child;
+			}
+
+		}
+	}
+	// No solution found
+	deleteNodes(nodePtrs);	// Free memory
+	return path;				// Return empty path
 }
 
-// Deletes dynamically allocated Nodes to free memory
-// Used in Search alogorithms
-void deleteNodes(vector<Node*> nodePtrs){
-	int i;
-	for ( i = 0; i < nodePtrs.size(); i++)
-		delete nodePtrs[i];
-}
+//[1]: For my open list that is ranked by F score I use a C++ map with an
+//integer F score as the key and a vector of Nodes as the value. C++ map
+//stores items in order by keys. I use a vector as the value so that
+//multiple Nodes with the same F score can be stored. When removing Nodes
+//from the open list I have to check if the Node is the last element in the
+//vector. If it is I have to delete the vector by using its corresponding
+//key. Otherwise A* might try to pull a Node from an empty vector. 
+
+
 
 /* _______________________________________________________________________
   [_____________________ UNINFORMED SEARCH ALGORITHMS ____________________]
@@ -425,134 +500,80 @@ vector<Node> iterativeDS(GameState startState){
 }
 
 
-/*	 _________________________________________________________________
-	[____________________ INFORMED SEARCH ALGORITHMS)_________________]
-*/
+/*   _____________________________________________________________________________
+  [__________________________ HELPER FUNCTIONS__________________________________]
+   
+ */
 
-//------------------------ A* SEARCH--------------------------------//
-vector<Node> aStar(GameState startState){
-	
-	Node graphNode(startState);
-	vector<Node> path; // Will store solution if it exists
+// Reads values from a file and converts them to a 2D vector
+vector< vector<int> > getValues(string fileName){
+ 
+        // Open file
 
-	// Chcck if initial state is goal state
-	if (startState.checkSolved())
-		return path;
+        ifstream fin;
+        fin.open(fileName.c_str());
 
-	// Stores keys to nodes in increasing F score order
-	map<int, vector<string> > openListKeys;
+        if (!fin){
+                cout << "Error opening " << fileName << endl;
+                exit (EXIT_FAILURE);
+        }
 
-	// Hash maps storing nodes to visit(openList) and nodes that have been
-	// visited(closedList)
-	map<string, Node> openList;
-	map<string, Node> closedList;
+		  // Read in line from file
 
-	vector<Node* > nodePtrs; // Keep track of dynamically allocated nodes
+		  // First two values are width and height
+        string line;       
+        getline(fin, line);
+			
+		  // Check that strlen is 4
+		  if(line.length() != 4){
+			  cout << "Incorrect format for height and width" << endl;
+			  exit (EXIT_FAILURE);
+		  }
 
-	// Put node on open list
-	string parentKey = graphNode.hashNode();
-	openList[parentKey] = graphNode;
-	graphNode.setScores();
-	int fScore = graphNode.getFScore();
-	openListKeys[fScore].push_back(parentKey);
+		  // Convert height to int
+		  char number = line[2];
+		  char* convert = new char[2];
+		  strcpy(convert, &number);
+		  char *endptr;
+		  
+		  int height = (int)strtol(convert, &endptr, 10);
 
-	// Iterate through all nodes until solution is found or leaves reached
-	while(!openListKeys.empty()){
-	//	cout << "HERE" << endl;	
-		// Get node with lowest f score
-		Node *parent = new Node;
-		parentKey = openListKeys.begin()->second[0];
-		*parent = openList[parentKey];
-		nodePtrs.push_back(parent);
+		  // Extract rows from file
+		  int i;
+		  string value;
+		  vector<int> values;
+		  vector< vector<int> > matrix;
 
-		// Remove node from openListKeys and openList
-		if (openListKeys.begin()->second.size() == 1)						//[1]
-			openListKeys.erase(openListKeys.begin()->first);
-		else
-			openListKeys.begin()->second.erase(openListKeys.begin()->second.begin());
-		openList.erase(parentKey);
+		  // Iterate through rows		  
+		  for(i = 0;i < height;i++){
+			  getline(fin, line);
+			  stringstream lineStream(line);
+			  
+			  // Extract numbers from rows
+			  while(getline(lineStream, value, ','))
+			  {
+				  convert = new char[value.length() + 1];
+				  strcpy(convert, value.c_str());
+				  int int_value = (int)strtol(convert, &endptr, 10);
+				  values.push_back(int_value);
+			  }
+			  
+			  // Add row to matrix
+			  matrix.push_back(values);
+			  values.clear();
 
-		// Add node to closed list
-		closedList[parentKey] = *parent;
+		  }
 
-		// Check if current node is solution
-		if (parent->checkSolved()){
-			Node* parentPtr;
-			parentPtr = parent;
-			// Walk backwards and add nodes to path
-			while(true){
-				path.insert(path.begin(), *parentPtr);
-				if (parentPtr->getParent() == NULL){
-					break;
-				}
-				parentPtr = parentPtr->getParent();
-			}
-			cout << "Nodes explored: " << closedList.size() << endl;
-			deleteNodes(nodePtrs);	// Free memory
-			return path;				// return solution path
-		}
+		  fin.close();
+		  return matrix;
 
-		vector<Move> moves = parent->getState().getAllMovesV2();
-
-		// for each successor_node
-		int i;
-		for (i = 0; i < moves.size(); i++)
-		{
-			// Set cost of each node to be cost of current + 1
-			// Generate each succesor_node from current_node
-			GameState childState = parent->getState().applyMoveCloning(moves[i]);
-			childState.normalizeState();
-
-			Node child(childState, parent, moves[i], (parent->getGScore()+1));
-			child.setScores();
-			string childKey = child.hashNode();
-			child.setScores();
-			int childFScore = child.getFScore();
-	
-			// Child is in closed list discard and continue
-			if (closedList.count(childKey) > 0)
-					continue;
-
-			// Child is in open list
-			if (openList.count(childKey) > 0){	
-				// Child in open list has f score better than current child
-				if (openList[childKey].getFScore() <= childFScore)
-					continue;
-				// Current old child has better f score than child in open list
-				else {
-					// Remove child in openListKeys and openList
-					int oldFScore = openList[childKey].getFScore();
-					std::vector<string>::iterator it = find(openListKeys[oldFScore].begin(),openListKeys[oldFScore].end(),childKey);
-					
-					if (openListKeys[oldFScore].size() == 1)            //[1]
-						openListKeys.erase(oldFScore);
-					else
-						openListKeys[oldFScore].erase(it);
-
-					openList.erase(childKey);
-					
-					// Add new child to openListKeys and openList
-					openListKeys[childFScore].push_back(childKey);
-					openList[childKey] = child;
-				}
-			} // Child is not in open or closed list
-			else { // Add child to open list
-				openListKeys[childFScore].push_back(childKey);
-				openList[childKey] = child;
-			}
-
-		}
-	}
-	// No solution found
-	deleteNodes(nodePtrs);	// Free memory
-	return path;				// Return empty path
 }
 
-//[1]: For my open list that is ranked by F score I use a C++ map with an
-//integer F score as the key and a vector of Nodes as the value. C++ map
-//stores items in order by keys. I use a vector as the value so that
-//multiple Nodes with the same F score can be stored. When removing Nodes
-//from the open list I have to check if the Node is the last element in the
-//vector. If it is I have to delete the vector by using its corresponding
-//key. Otherwise A* might try to pull a Node from an empty vector. 
+// Deletes dynamically allocated Nodes to free memory
+// Used in Search alogorithms
+void deleteNodes(vector<Node*> nodePtrs){
+	int i;
+	for ( i = 0; i < nodePtrs.size(); i++)
+		delete nodePtrs[i];
+}
 
